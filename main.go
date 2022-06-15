@@ -1,7 +1,9 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 
@@ -9,10 +11,19 @@ import (
 )
 
 var enmicromsg *db.EnMicroMsg
+var wxfileindex *db.WxFileIndex
+
+//go:embed static
+var htmlFile embed.FS
 
 func main() {
 	enmicromsg = db.OpenEnMicroMsg("/Users/zheng/Documents/wcdb/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex("/Users/zheng/Documents/wcdb/wxfileindex_plaintext.db")
 
+	fsys, _ := fs.Sub(htmlFile, "static")
+	staticHandle := http.FileServer(http.FS(fsys))
+
+	http.Handle("/", staticHandle)
 	http.Handle("/api/", route())
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
