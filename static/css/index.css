@@ -1,0 +1,24 @@
+.wechat{
+	/* border: 1px solid red; */
+	background-color: rgb(39, 148, 77);
+	overflow: hidden;
+	height: 600px;
+	width: 800px;
+}
+.chat-list{
+	float: left;
+	overflow: hidden;
+	/* border: 1px solid greenyellow; */
+	background-color: rgb(134, 166, 29);
+	height: 100%;
+	width: 30%;
+	
+}
+
+.chat-content{
+	float: left;
+	/* border: 1px solid rgb(193, 70, 183); */
+	background-color: rgb(193, 70, 183);
+	height: 100%;
+	width: 70%;
+}
