@@ -1,0 +1,5 @@
+
+### 查询聊天列表
+GET http://172.26.169.44:8080/api/chat/list?pageIndex=1&pageSize=4 HTTP/1.1
+### 查询聊天记录
+GET http://172.26.169.44:8080/api/chat/detail?talker=gh_6a2ec11909ec&pageIndex=1&pageSize=2 HTTP/1.1

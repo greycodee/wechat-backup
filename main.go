@@ -2,10 +2,12 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/greycodee/wcdb-parse/db"
 )
@@ -17,17 +19,19 @@ var wxfileindex *db.WxFileIndex
 var htmlFile embed.FS
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg("/Users/zheng/Documents/wcdb/enmicromsg_plaintext.db")
-	wxfileindex = db.OpenWxFileIndex("/Users/zheng/Documents/wcdb/wxfileindex_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg("/mnt/d/MicroMsg/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex("/mnt/d/MicroMsg/wxfileindex_plaintext.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
 
 	http.Handle("/", staticHandle)
 	http.Handle("/api/", route())
+
+	log.Println("server start")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("ListenAndServe: %v", err)
 	}
 }
 
@@ -45,14 +49,28 @@ func (api *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 	"/api/chat/list": func(w http.ResponseWriter, r *http.Request) {
-		// TODO 聊天列表
-		fmt.Println("/api/chat/list")
-		w.Write([]byte(enmicromsg.ChatList()))
+		// 聊天列表
+		params := r.URL.Query()
+		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
+		pageSize, _ := strconv.Atoi(params["pageSize"][0])
+		result, err := json.Marshal(enmicromsg.ChatList(pageIndex-1, pageSize))
+		if err != nil {
+			log.Fatalf("json marshal error: %v", err)
+		}
+		w.Write(result)
 	},
 	"/api/chat/detail": func(w http.ResponseWriter, r *http.Request) {
-		// TODO 聊天记录
-		fmt.Println("/api/chat/detail")
-		w.Write([]byte("/api/chat/detail"))
+		//聊天记录
+		params := r.URL.Query()
+		talker := params["talker"][0]
+		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
+		pageSize, _ := strconv.Atoi(params["pageSize"][0])
+
+		result, err := json.Marshal(enmicromsg.ChatDetailList(talker, pageIndex-1, pageSize))
+		if err != nil {
+			log.Fatalf("json marshal error: %v", err)
+		}
+		w.Write(result)
 	},
 	"/api/user/info": func(w http.ResponseWriter, r *http.Request) {
 		// TODO 用户信息
