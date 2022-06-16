@@ -75,8 +75,8 @@ $(function(){
       console.log($(".chat").scrollTop)
       console.log($(".chat").scrollHeight)
     //  = $(".chat").scrollHeight // 滚动高度至最底部
-    $('.chat').getNiceScroll(0).doScrollTop($('.answer').height());
-    // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
+    // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height());
+    $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
 
 
     function timestampToTime(timestamp) {

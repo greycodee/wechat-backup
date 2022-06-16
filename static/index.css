@@ -80,6 +80,9 @@
 }
 
 /*****************CHAT BODY *******************/
+.chat-body{
+    overflow: hidden;
+}
 .chat-body h6 {
     font-size: 20px;
     margin: 0 0 20px;
