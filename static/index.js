@@ -1,6 +1,7 @@
 $(function(){
     let pageIndex = 1;
     let pageSize  = 10;
+    let noneData = false;
 
     $(".chat").niceScroll(
     );
@@ -10,8 +11,13 @@ $(function(){
       // TODO
       console.log(e);
       if(e.current.y<300 && e.current.y>0){
-        pageIndex++;
-        addChatList(paramsObj['talker'],pageIndex,pageSize,true);
+        if(!noneData){
+          pageIndex++;
+          addChatList(paramsObj['talker'],pageIndex,pageSize,true);
+        }else{
+          console.log("没有更多数据了");
+        }
+       
       }
     });
     
@@ -127,28 +133,31 @@ $(function(){
         async: async,
         dataType: 'json',
         success: function(data){
-          jQuery.each( data.rows, function( i, item ) {
-            let position = item.isSend==0? 'left': 'right';
-            let userInfo = item.isSend==0? otherInfo: myInfo;
-  
-            let n1 = userInfo.conRemark==""? userInfo.nickName: userInfo.conRemark;
-            let n2 = n1==""?userInfo.alias:n1;
-            let n3 = n2==""?userInfo.userName:n2;
-            let div = `<div class="answer ${position}">
-                    <div class="avatar">
-                      <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
-          
-                    </div>
-                    <div class="name">${n3}</div>
-                    <div class="text">
-                      ${getText(item)}
-                    </div>
-                    <div class="time">${timestampToTime(item.createTime)}</div>
-                  </div>`;
-            $(".chat-body").prepend(div);
-            }
-          );
-          
+          if  (data.rows.length==0) {
+            noneData = true;
+          }else{
+            jQuery.each( data.rows, function( i, item ) {
+              let position = item.isSend==0? 'left': 'right';
+              let userInfo = item.isSend==0? otherInfo: myInfo;
+    
+              let n1 = userInfo.conRemark==""? userInfo.nickName: userInfo.conRemark;
+              let n2 = n1==""?userInfo.alias:n1;
+              let n3 = n2==""?userInfo.userName:n2;
+              let div = `<div class="answer ${position}">
+                      <div class="avatar">
+                        <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
+            
+                      </div>
+                      <div class="name">${n3}</div>
+                      <div class="text">
+                        ${getText(item)}
+                      </div>
+                      <div class="time">${timestampToTime(item.createTime)}</div>
+                    </div>`;
+              $(".chat-body").prepend(div);
+              }
+            );
+          }
         }});
     }
     

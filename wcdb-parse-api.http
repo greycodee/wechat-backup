@@ -7,7 +7,7 @@
 ### 查询聊天列表
 GET {{host}}/api/chat/list?pageIndex=1&pageSize=4 HTTP/1.1
 ### 查询聊天记录
-GET {{host}}/api/chat/detail?talker=12&pageIndex=1&pageSize=10 HTTP/1.1
+GET {{host}}/api/chat/detail?talker=2&pageIndex=40&pageSize=10 HTTP/1.1
 
 ### 查询用户信息
 GET {{host}}/api/user/info?username=weixin HTTP/1.1
