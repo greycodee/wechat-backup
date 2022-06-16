@@ -38,7 +38,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
 	defer rows.Close()
 	for rows.Next() {
 		var r ChatListRow
-		err = rows.Scan(&r.MsgCount, &r.Talker, &r.Nickname, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
+		err = rows.Scan(&r.MsgCount, &r.Talker, &r.NickName, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -90,4 +90,21 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) 
 		result.Rows = append(result.Rows, r)
 	}
 	return result
+}
+
+func (em EnMicroMsg) UserInfo(username string) UserInfo {
+	r := UserInfo{}
+	querySql := fmt.Sprintf("select rc.username,rc.alias,rc.conRemark,rc.nickname,imf.reserved1,imf.reserved2 from rcontact rc LEFT JOIN img_flag imf on rc.username=imf.username where rc.username='%s';", username)
+	rows, err := em.db.Query(querySql)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return r
 }

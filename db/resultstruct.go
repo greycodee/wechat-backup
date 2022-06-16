@@ -7,7 +7,7 @@ type ChatList struct {
 
 type ChatListRow struct {
 	Talker     string `json:"talker"`
-	Nickname   string `json:"nickname"`
+	NickName   string `json:"nickname"`
 	ConRemark  string `json:"conRemark"`
 	Reserved1  string `json:"reserved1"`
 	Reserved2  string `json:"reserved2"`
@@ -28,4 +28,13 @@ type ChatDetailListRow struct {
 	CreateTime int64  `json:"createTime"`
 	Talker     string `json:"talker"`
 	Content    string `json:"content"`
+}
+
+type UserInfo struct {
+	UserName  string `json:"userName"`
+	Alias     string `json:"alias"`
+	ConRemark string `json:"conRemark"`
+	NickName  string `json:"nickName"`
+	Reserved1 string `json:"reserved1"`
+	Reserved2 string `json:"reserved2"`
 }

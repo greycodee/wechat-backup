@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -18,9 +19,11 @@ var wxfileindex *db.WxFileIndex
 //go:embed static
 var htmlFile embed.FS
 
+var serverPort = "8080"
+
 func main() {
-	enmicromsg = db.OpenEnMicroMsg("/mnt/d/MicroMsg/enmicromsg_plaintext.db")
-	wxfileindex = db.OpenWxFileIndex("/mnt/d/MicroMsg/wxfileindex_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg("/Users/zheng/Documents/wcdb/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex("/Users/zheng/Documents/wcdb/wxfileindex_plaintext.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
@@ -29,7 +32,15 @@ func main() {
 	http.Handle("/api/", route())
 
 	log.Println("server start")
-	err := http.ListenAndServe(":8080", nil)
+	interfaceAddr, _ := net.InterfaceAddrs()
+	for _, address := range interfaceAddr {
+		ipNet, _ := address.(*net.IPNet)
+		if ipNet.IP.To4() != nil {
+			log.Printf("server addr http://%s:%s", ipNet.IP.String(), serverPort)
+		}
+	}
+
+	err := http.ListenAndServe(":"+serverPort, nil)
 	if err != nil {
 		log.Fatalf("ListenAndServe: %v", err)
 	}
@@ -73,9 +84,14 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		w.Write(result)
 	},
 	"/api/user/info": func(w http.ResponseWriter, r *http.Request) {
-		// TODO 用户信息
-		fmt.Println("/api/user/info")
-		w.Write([]byte("/api/user/info"))
+		// 用户信息
+		params := r.URL.Query()
+		username := params["username"][0]
+		result, err := json.Marshal(enmicromsg.UserInfo(username))
+		if err != nil {
+			log.Fatalf("json marshal error: %v", err)
+		}
+		w.Write(result)
 	},
 	"/api/media/img": func(w http.ResponseWriter, r *http.Request) {
 		// TODO 图片
