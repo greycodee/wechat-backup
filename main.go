@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"encoding/json"
-	"fmt"
 	"io/fs"
 	"log"
 	"net"
@@ -22,15 +21,15 @@ var htmlFile embed.FS
 var serverPort = "8080"
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg("/Users/zheng/Documents/wcdb/enmicromsg_plaintext.db")
-	wxfileindex = db.OpenWxFileIndex("/Users/zheng/Documents/wcdb/wxfileindex_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg("/mnt/d/MicroMsg/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex("/mnt/d/MicroMsg/wxfileindex_plaintext.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
 
 	// 文件路由
-	fs := http.FileServer(http.Dir("/Users/zheng/Documents/"))
-	http.Handle("/file/", http.StripPrefix("/file/", fs))
+	fs := http.FileServer(http.Dir("/mnt/d/MicroMsg/"))
+	http.Handle("/media/", http.StripPrefix("/media/", fs))
 
 	http.Handle("/", staticHandle)
 	http.Handle("/api/", route())
@@ -98,18 +97,21 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		w.Write(result)
 	},
 	"/api/media/img": func(w http.ResponseWriter, r *http.Request) {
-		// TODO 图片
-		fmt.Println("/api/media/img")
-		w.Write([]byte("/api/media/img"))
+		// 图片
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetImgPath(msgId)))
 	},
 	"/api/media/video": func(w http.ResponseWriter, r *http.Request) {
 		// TODO 视频
-		fmt.Println("/api/media/video")
-		w.Write([]byte("/api/media/video"))
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetVideoPath(msgId)))
 	},
 	"/api/media/voice": func(w http.ResponseWriter, r *http.Request) {
 		// TODO 语音
-		fmt.Println("/api/media/voice")
-		w.Write([]byte("/api/media/voice"))
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetVoicePath(msgId)))
 	},
 }

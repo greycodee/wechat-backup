@@ -1,6 +1,6 @@
 
 @local = http://127.0.0.1:8080/
-@wsl = http://172.26.169.44:8080
+@wsl = http://172.23.232.205:8080
 
 @host = {{local}}
 
@@ -11,3 +11,7 @@ GET {{host}}/api/chat/detail?talker=2&pageIndex=40&pageSize=10 HTTP/1.1
 
 ### 查询用户信息
 GET {{host}}/api/user/info?username=weixin HTTP/1.1
+
+### 查询图片地址
+GET {{host}}/api/media/img?msgId=3311 HTTP/1.1
+

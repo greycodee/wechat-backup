@@ -2,6 +2,7 @@ $(function(){
     let pageIndex = 1;
     let pageSize  = 10;
     let noneData = false;
+    let host = window.location.host;
 
     $(".chat").niceScroll(
     );
@@ -37,7 +38,7 @@ $(function(){
 
     let otherInfo = '';
     $.ajax({
-      url: 'http://127.0.0.1:8080/api/user/info?username='+paramsObj['talker'],
+      url: ' http://'+host+'/api/user/info?username='+paramsObj['talker'],
       type: 'GET',
       jsonp: true,
       async: false,
@@ -48,7 +49,7 @@ $(function(){
 
     let myInfo = '';
     $.ajax({
-      url: 'http://127.0.0.1:8080/api/user/info?username=wxid_nn17m6suhg8122',
+      url: ' http://'+host+'/api/user/info?username=wxid_nn17m6suhg8122',
       type: 'GET',
       jsonp: true,
       async: false,
@@ -102,15 +103,27 @@ $(function(){
     }
 
     function getText(chat){
+      let mediaPath = 'media/'+getMediaPath(chat.msgId,chat.type)
       switch (chat.type) {
         case 1:
           return chat.content;
         case 3:
-          return '[图片]';
+          return '<img src="'+mediaPath+'" alt="图片" width="100" height="200" >';
         case 34:
-          return '[语音]';
+          // TODO 语音要转码 amr格式
+          // return '<audio controls>'+
+          // '<source src="'+mediaPath+'" >您的浏览器不支持 audio 元素。</audio>';
+          return `<audio controls>
+                    <source src="`+mediaPath+`" type="audio/mpeg">
+                    您的浏览器不支持 audio 元素。
+                  </audio>`;
         case 43:
-          return '[视频]';
+          var samples = AMR.decode(mediaPath);
+          return `<video controls width="250"> -->
+                    <source src="`+samples+`">
+          
+                    Sorry, your browser doesn't support embedded videos.
+                  </video>`;
         case 47:
           return '[大表情]';
         case 49:
@@ -127,7 +140,7 @@ $(function(){
     // 添加聊天记录
     function addChatList(talker,pageIndex,pageSize,async){
       $.ajax({
-        url: 'http://127.0.0.1:8080/api/chat/detail?talker='+talker+'&pageIndex='+pageIndex+'&pageSize='+pageSize+'',
+        url: ' http://'+host+'/api/chat/detail?talker='+talker+'&pageIndex='+pageIndex+'&pageSize='+pageSize+'',
         type: 'GET',
         jsonp: true,
         async: async,
@@ -159,9 +172,80 @@ $(function(){
             );
           }
         }});
+
+        
+    }
+
+    function getMediaPath(msgId,type){
+      let url = ''
+      let imgPath = ''
+      switch (type) {
+        case 3:
+          url = 'http://'+host+'/api/media/img?msgId='+msgId;
+        break;
+        case 34:
+          url = 'http://'+host+'/api/media/voice?msgId='+msgId;
+          // TODO 语音要转码 amr格式
+          // return '<audio controls>'+
+          // '<source src="'+mediaPath+'" >您的浏览器不支持 audio 元素。</audio>';
+          break;
+        case 43:
+          url = 'http://'+host+'/api/media/video?msgId='+msgId;
+          break;
+      }
+      $.ajax({
+        url: url,
+        type: 'GET',
+        async: false,
+        success: function(data){
+          imgPath = data;
+        }
+      });
+      return imgPath;
     }
     
 
+
+
+
+    // amr
+  function readBlob(blob, callback) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var data = new Uint8Array(e.target.result);
+        callback(data);
+    };
+    reader.readAsArrayBuffer(blob);
+  }
+  function playAmrBlob(blob, callback) {
+    readBlob(blob, function(data) {
+        playAmrArray(data);
+    });
+  }  
+  function playAmrArray(array) {
+    var samples = AMR.decode(array);
+    if (!samples) {
+        alert('Failed to decode!');
+        return;
+    }
+    playPcm(samples);
+  }
+
+  function playPcm(samples) {
+      var ctx = getAudioContext();
+      var src = ctx.createBufferSource();
+      var buffer = ctx.createBuffer(1, samples.length, 8000);
+      if (buffer.copyToChannel) {
+          buffer.copyToChannel(samples, 0, 0)
+      } else {
+          var channelBuffer = buffer.getChannelData(0);
+          channelBuffer.set(samples);
+      }
+
+      src.buffer = buffer;
+      src.connect(ctx.destination);
+      src.start();
+  }
 
 
 }) 
