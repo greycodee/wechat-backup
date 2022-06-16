@@ -28,6 +28,10 @@ func main() {
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
 
+	// 文件路由
+	fs := http.FileServer(http.Dir("/Users/zheng/Documents/"))
+	http.Handle("/file/", http.StripPrefix("/file/", fs))
+
 	http.Handle("/", staticHandle)
 	http.Handle("/api/", route())
 
