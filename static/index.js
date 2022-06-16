@@ -1,10 +1,20 @@
 $(function(){
+    let pageIndex = 1;
+    let pageSize  = 10;
+
     $(".chat").niceScroll(
     );
-    console.log($(".chat").scrollTop)
-    console.log($(".chat").scrollHeight)
     
-    console.log(window.location.search);
+    // 滑动监听
+    $(".chat").getNiceScroll(0).scrollend(function(e) {
+      // TODO
+      console.log(e);
+      if(e.current.y<300 && e.current.y>0){
+        pageIndex++;
+        addChatList(paramsObj['talker'],pageIndex,pageSize,true);
+      }
+    });
+    
     let search = window.location.search;
     let params = search.split('?')[1];
     let paramsArray = params.split('&');
@@ -41,39 +51,40 @@ $(function(){
         myInfo=data;
       }});
 
-    $.ajax({
-      url: 'http://127.0.0.1:8080/api/chat/detail?talker='+paramsObj['talker']+'&pageIndex=1&pageSize=20',
-      type: 'GET',
-      jsonp: true,
-      async: false,
-      dataType: 'json',
-      success: function(data){
-        let htmldiv2 = ``;
-        jQuery.each( data.rows, function( i, item ) {
-          let position = item.isSend==0? 'left': 'right';
-          let userInfo = item.isSend==0? otherInfo: myInfo;
+    // $.ajax({
+    //   url: 'http://127.0.0.1:8080/api/chat/detail?talker='+paramsObj['talker']+'&pageIndex=1&pageSize=20',
+    //   type: 'GET',
+    //   jsonp: true,
+    //   async: false,
+    //   dataType: 'json',
+    //   success: function(data){
+    //     let htmldiv2 = ``;
+    //     jQuery.each( data.rows, function( i, item ) {
+    //       let position = item.isSend==0? 'left': 'right';
+    //       let userInfo = item.isSend==0? otherInfo: myInfo;
 
-          let n1 = userInfo.conRemark==""? userInfo.nickName: userInfo.conRemark;
-          let n2 = n1==""?userInfo.alias:n1;
-          let n3 = n2==""?userInfo.userName:n2;
-          htmldiv2 += `<div class="answer ${position}">
-                  <div class="avatar">
-                    <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
+    //       let n1 = userInfo.conRemark==""? userInfo.nickName: userInfo.conRemark;
+    //       let n2 = n1==""?userInfo.alias:n1;
+    //       let n3 = n2==""?userInfo.userName:n2;
+    //       let div = `<div class="answer ${position}">
+    //               <div class="avatar">
+    //                 <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
         
-                  </div>
-                  <div class="name">${n3}</div>
-                  <div class="text">
-                    ${getText(item)}
-                  </div>
-                  <div class="time">${timestampToTime(item.createTime)}</div>
-                </div>`;
-          }
-        );
-        $(".chat-body").append(htmldiv2);
-      }});
+    //               </div>
+    //               <div class="name">${n3}</div>
+    //               <div class="text">
+    //                 ${getText(item)}
+    //               </div>
+    //               <div class="time">${timestampToTime(item.createTime)}</div>
+    //             </div>`;
+    //       $(".chat-body").prepend(div);
+    //       }
+    //     );
+        
+    //   }});
 
-      console.log($(".chat").scrollTop)
-      console.log($(".chat").scrollHeight)
+    addChatList(paramsObj['talker'],pageIndex,pageSize,false);
+
     //  = $(".chat").scrollHeight // 滚动高度至最底部
     // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height());
     $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
@@ -106,7 +117,42 @@ $(function(){
           return '[未知消息]';
       }
     }
+
+    // 添加聊天记录
+    function addChatList(talker,pageIndex,pageSize,async){
+      $.ajax({
+        url: 'http://127.0.0.1:8080/api/chat/detail?talker='+talker+'&pageIndex='+pageIndex+'&pageSize='+pageSize+'',
+        type: 'GET',
+        jsonp: true,
+        async: async,
+        dataType: 'json',
+        success: function(data){
+          jQuery.each( data.rows, function( i, item ) {
+            let position = item.isSend==0? 'left': 'right';
+            let userInfo = item.isSend==0? otherInfo: myInfo;
+  
+            let n1 = userInfo.conRemark==""? userInfo.nickName: userInfo.conRemark;
+            let n2 = n1==""?userInfo.alias:n1;
+            let n3 = n2==""?userInfo.userName:n2;
+            let div = `<div class="answer ${position}">
+                    <div class="avatar">
+                      <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
+          
+                    </div>
+                    <div class="name">${n3}</div>
+                    <div class="text">
+                      ${getText(item)}
+                    </div>
+                    <div class="time">${timestampToTime(item.createTime)}</div>
+                  </div>`;
+            $(".chat-body").prepend(div);
+            }
+          );
+          
+        }});
+    }
     
+
 
 
 }) 
