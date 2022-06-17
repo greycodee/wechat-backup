@@ -7,7 +7,7 @@ $(function () {
   $(".chat").niceScroll();
   $(".chat-list").niceScroll();
 
-  addUserChatList(1,10);
+  addUserChatList(1, 50);
 
   $("#more").click(function () {
     if (!noneData) {
@@ -22,10 +22,6 @@ $(function () {
       console.log("没有更多数据了");
     }
   })
-
-
-
-  // addChatList(paramsObj['talker'], pageIndex, pageSize, false);
 
   //  = $(".chat").scrollHeight // 滚动高度至最底部
   // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height());
@@ -69,8 +65,8 @@ $(function () {
     }
   }
 
-  // 添加聊天记录
-  function addChatList(talker, pageIndex, pageSize, async,otherInfo,myInfo) {
+  // 添加个人用户聊天记录
+  function addChatList(talker, pageIndex, pageSize, async, otherInfo, myInfo) {
     $.ajax({
       url: ' http://' + host + '/api/chat/detail?talker=' + talker + '&pageIndex=' + pageIndex + '&pageSize=' + pageSize + '',
       type: 'GET',
@@ -82,30 +78,34 @@ $(function () {
           noneData = true;
         } else {
           jQuery.each(data.rows, function (i, item) {
-            let position = item.isSend == 0 ? 'left' : 'right';
-            let userInfo = item.isSend == 0 ? otherInfo : myInfo;
-
-            let n1 = userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
-            let n2 = n1 == "" ? userInfo.alias : n1;
-            let n3 = n2 == "" ? userInfo.userName : n2;
-            let div = `<div class="answer ${position}">
-                      <div class="avatar">
-                        <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
-            
-                      </div>
-                      <div class="name">${n3}</div>
-                      <div class="text">
-                        ${getText(item)}
-                      </div>
-                      <div class="time">${timestampToTime(item.createTime)}</div>
-                    </div>`;
-            $(".chat-body").prepend(div);
+            addChatBody(item, myInfo, otherInfo)
             $('.chat').getNiceScroll(0).doScrollTop(837);
           }
           );
         }
       }
     });
+  }
+
+  function addChatBody(item, myInfo, otherInfo) {
+    let position = item.isSend == 0 ? 'left' : 'right';
+    let userInfo = item.isSend == 0 ? otherInfo : myInfo;
+
+    let n1 = userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
+    let n2 = n1 == "" ? userInfo.alias : n1;
+    let n3 = n2 == "" ? userInfo.userName : n2;
+    let div = `<div class="answer ${position}">
+              <div class="avatar">
+                <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
+    
+              </div>
+              <div class="name">${n3}</div>
+              <div class="text">
+                ${getText(item)}
+              </div>
+              <div class="time">${timestampToTime(item.createTime)}</div>
+            </div>`;
+    $(".chat-body").prepend(div);
   }
 
   // 聊天列表初始化
@@ -128,30 +128,29 @@ $(function () {
                       </div>
                     <span class="badge bg-primary rounded-pill">${item.msgCount}</span>
                   </li>`;
-          $(".chat-user-list").prepend(li);
+          $(".chat-user-list").append(li);
         })
       }
     });
   }
 
-  $("ul li").click(function(){
-      let talker = $(this).attr('id');
-      console.log(talker)
-      // 更新聊天框
-      // var talker = $(this).attr('class');
-      $("li").removeClass("active");
-      $(this).addClass("active");
-      // document.getElementsByClassName("list-group-item").classList.add("active");
-      $(".chat-body").html('');
-      pageIndex=1
-      addChatList(talker, pageIndex, pageSize, true,getUserInfo(talker),getUserInfo(talker));
-    })
+  $("ul li").click(function () {
+    let talker = $(this).attr('id');
+    console.log(talker)
+    // 更新聊天框
+    // var talker = $(this).attr('class');
+    $("li").removeClass("active");
+    $(this).addClass("active");
+    $(".chat-body").html('');
+    pageIndex = 1
+    addChatList(talker, pageIndex, pageSize, true, getUserInfo(talker), getUserInfo(talker));
+  })
 
   // 获取用户信息
   function getUserInfo(username) {
     let info = {};
     $.ajax({
-      url: ' http://' + host + '/api/user/info?username='+username,
+      url: ' http://' + host + '/api/user/info?username=' + username,
       type: 'GET',
       jsonp: true,
       async: false,

@@ -85,7 +85,7 @@
 /*****************CHAT BODY *******************/
 .chat-body{
     overflow: hidden;
-    background-color: #ffc107;
+    /* background-color: #ffc107; */
 
 }
 .chat-body h6 {
@@ -195,7 +195,7 @@
 /*chat list*/
 
 .chat-list{
-    background-color: #4caf50;
+    /* background-color: #4caf50; */
     height: calc(75vh - 180px);
     position: fixed;
     bottom: 150px;
@@ -241,6 +241,11 @@
 .chat-talker{
     color: rgb(124, 139, 151);
     font-size: x-small;
+}
+
+.count-num{
+    color: #ffffff;
+    background-color: #4caf50;
 }
 
 
