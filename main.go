@@ -20,15 +20,17 @@ var htmlFile embed.FS
 
 var serverPort = "8080"
 
+var basePath = "/Users/zheng/Documents/wcdb"
+
 func main() {
-	enmicromsg = db.OpenEnMicroMsg("/mnt/d/MicroMsg/enmicromsg_plaintext.db")
-	wxfileindex = db.OpenWxFileIndex("/mnt/d/MicroMsg/wxfileindex_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg(basePath + "/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex(basePath + "/wxfileindex_plaintext.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
 
 	// 文件路由
-	fs := http.FileServer(http.Dir("/mnt/d/MicroMsg/"))
+	fs := http.FileServer(http.Dir(basePath))
 	http.Handle("/media/", http.StripPrefix("/media/", fs))
 
 	http.Handle("/", staticHandle)

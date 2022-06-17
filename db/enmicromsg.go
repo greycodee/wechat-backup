@@ -30,7 +30,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
 	result.Total = 10
 	result.Rows = make([]ChatListRow, 0)
 	// sql := "select count(*),msg.talker,rc.nickname,rc.conRemark,imf.reserved1,imf.reserved2 from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker"
-	queryRowsSql := fmt.Sprintf("select count(*) as msgCount,msg.talker,rc.nickname,rc.conRemark,imf.reserved1,imf.reserved2,msg.createtime,rc.type as chatType from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc;select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
+	queryRowsSql := fmt.Sprintf("select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
 		fmt.Println(err)
@@ -94,7 +94,7 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) 
 
 func (em EnMicroMsg) UserInfo(username string) UserInfo {
 	r := UserInfo{}
-	querySql := fmt.Sprintf("select rc.username,rc.alias,rc.conRemark,rc.nickname,imf.reserved1,imf.reserved2 from rcontact rc LEFT JOIN img_flag imf on rc.username=imf.username where rc.username='%s';", username)
+	querySql := fmt.Sprintf("select rc.username,rc.alias,rc.conRemark,rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc LEFT JOIN img_flag imf on rc.username=imf.username where rc.username='%s';", username)
 	rows, err := em.db.Query(querySql)
 	if err != nil {
 		fmt.Println(err)
