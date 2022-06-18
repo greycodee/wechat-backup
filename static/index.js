@@ -10,20 +10,6 @@ $(function () {
 
   addUserChatList(1, 50);
 
-  $("#more").click(function () {
-    if (!noneData) {
-      let h = $('.chat-body').height()
-      console.log(h)
-      pageIndex++;
-      // addChatList(paramsObj['talker'], pageIndex, pageSize, true);
-
-      let h2 = $('.chat-body').height()
-      console.log(h2)
-    } else {
-      console.log("没有更多数据了");
-    }
-  })
-
   //  = $(".chat").scrollHeight // 滚动高度至最底部
   // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height());
   $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
@@ -77,8 +63,8 @@ $(function () {
       success: function (data) {
         if (data.rows.length == 0) {
           noneData = true;
+          alert('没有更多数据了');
         } else {
-
           let ta = talker.split('@')
           let chatRoomFlag = false
           if (ta.length == 2 && ta[1] === 'chatroom') {
@@ -88,7 +74,7 @@ $(function () {
           jQuery.each(data.rows, function (i, item) {
             if (chatRoomFlag) {
               item.talker = item.content.split(':', 1)[0];
-              item.content = item.content.slice(item.talker.length + 1, -1);
+              item.content = item.content.slice(item.talker.length + 1);
             }
             addChatBody(item)
             $('.chat').getNiceScroll(0).doScrollTop(837);
@@ -117,7 +103,7 @@ $(function () {
               </div>
               <div class="time">${timestampToTime(item.createTime)}</div>
             </div>`;
-    $(".chat-body").prepend(div);
+    $(".divide").after(div);
   }
 
   // 聊天列表初始化
@@ -132,13 +118,13 @@ $(function () {
         jQuery.each(data.rows, function (i, item) {
           let li = `<li class="list-group-item d-flex justify-content-between align-items-start" id="${item.talker}">
                       <div class="avatar">
-                          <img src="${item.reserved1}" alt="头像">
+                          <img src="${item.reserved2}" alt="头像">
                       </div>
                       <div class="ms-2 me-auto chat-list-item">
                           <div class="fw-bold chat-title">${item.nickname}</div>
                           <div class="fw-bold chat-talker">talker: ${item.talker}</div>
                       </div>
-                    <span class="badge bg-primary rounded-pill">${item.msgCount}</span>
+                    <span class="badge rounded-pill">${item.msgCount}</span>
                   </li>`;
           $(".chat-user-list").append(li);
         })
@@ -149,11 +135,16 @@ $(function () {
   $("ul li").click(function () {
     let talker = $(this).attr('id');
     console.log(talker)
+    noneData=false;
     // 更新聊天框
-    // var talker = $(this).attr('class');
     $("li").removeClass("active");
     $(this).addClass("active");
     $(".chat-body").html('');
+    let more = `<div class="divide" ><i class="fa fa-arrow-circle-o-right"></i></div>`;
+    $(".chat-body").prepend(more);
+    $('.divide').click(function () {
+      moreData(talker);
+    })
     pageIndex = 1
     addChatList(talker, pageIndex, pageSize, true, getUserInfo(talker), getUserInfo(talker));
   })
@@ -231,6 +222,15 @@ $(function () {
       }
       return userInfo;
 
+    }
+  }
+
+  function moreData(talker){
+    if (!noneData) {
+      pageIndex++;
+      addChatList(talker, pageIndex, pageSize, true);
+    } else {
+      alert('没有更多数据了');
     }
   }
 }) 

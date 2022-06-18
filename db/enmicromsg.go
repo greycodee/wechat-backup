@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -29,7 +30,6 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
 	result := &ChatList{}
 	result.Total = 10
 	result.Rows = make([]ChatListRow, 0)
-	// sql := "select count(*),msg.talker,rc.nickname,rc.conRemark,imf.reserved1,imf.reserved2 from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker"
 	queryRowsSql := fmt.Sprintf("select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
@@ -39,6 +39,17 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
 	for rows.Next() {
 		var r ChatListRow
 		err = rows.Scan(&r.MsgCount, &r.Talker, &r.NickName, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
+		// 判断是否是群聊
+		if len(strings.Split(r.Talker, "@")) == 2 && strings.Split(r.Talker, "@")[1] == "chatroom" {
+			if r.NickName == "" {
+				queryRoomSql := fmt.Sprintf("select displayname as nickname from chatroom where chatroomname='%s'", r.Talker)
+				room, _ := em.db.Query(queryRoomSql)
+				defer room.Close()
+				for room.Next() {
+					room.Scan(&r.NickName)
+				}
+			}
+		}
 		if err != nil {
 			log.Fatal(err)
 		}
