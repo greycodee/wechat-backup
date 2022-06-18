@@ -3,6 +3,7 @@ $(function () {
   let pageSize = 5;
   let noneData = false;
   let host = window.location.host;
+  let timestamp = new Date().getTime();
 
   $(".chat").niceScroll();
   $(".chat-list").niceScroll();
@@ -14,7 +15,7 @@ $(function () {
       let h = $('.chat-body').height()
       console.log(h)
       pageIndex++;
-      addChatList(paramsObj['talker'], pageIndex, pageSize, true);
+      // addChatList(paramsObj['talker'], pageIndex, pageSize, true);
 
       let h2 = $('.chat-body').height()
       console.log(h2)
@@ -66,7 +67,7 @@ $(function () {
   }
 
   // 添加个人用户聊天记录
-  function addChatList(talker, pageIndex, pageSize, async, otherInfo, myInfo) {
+  function addChatList(talker, pageIndex, pageSize, async) {
     $.ajax({
       url: ' http://' + host + '/api/chat/detail?talker=' + talker + '&pageIndex=' + pageIndex + '&pageSize=' + pageSize + '',
       type: 'GET',
@@ -77,8 +78,19 @@ $(function () {
         if (data.rows.length == 0) {
           noneData = true;
         } else {
+
+          let ta = talker.split('@')
+          let chatRoomFlag = false
+          if (ta.length == 2 && ta[1] === 'chatroom') {
+            // 群聊 
+            chatRoomFlag = true
+          }
           jQuery.each(data.rows, function (i, item) {
-            addChatBody(item, myInfo, otherInfo)
+            if (chatRoomFlag) {
+              item.talker = item.content.split(':', 1)[0];
+              item.content = item.content.slice(item.talker.length + 1, -1);
+            }
+            addChatBody(item)
             $('.chat').getNiceScroll(0).doScrollTop(837);
           }
           );
@@ -87,17 +99,17 @@ $(function () {
     });
   }
 
-  function addChatBody(item, myInfo, otherInfo) {
+  function addChatBody(item) {
     let position = item.isSend == 0 ? 'left' : 'right';
-    let userInfo = item.isSend == 0 ? otherInfo : myInfo;
+    let userInfo = item.isSend == 0 ? getUserInfoLocalStrage(item.talker, false) : getUserInfoLocalStrage('', true);
+    console.log(userInfo);
 
-    let n1 = userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
+    let n1 = typeof (userInfo.conRemark) == 'undefined' || userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
     let n2 = n1 == "" ? userInfo.alias : n1;
     let n3 = n2 == "" ? userInfo.userName : n2;
     let div = `<div class="answer ${position}">
               <div class="avatar">
-                <img src="${userInfo.reserved2}" alt="${userInfo.nickName}">
-    
+                <img src="${userInfo.reserved2}" alt="${n3}">
               </div>
               <div class="name">${n3}</div>
               <div class="text">
@@ -185,5 +197,40 @@ $(function () {
       }
     });
     return imgPath;
+  }
+
+  function getUserInfoLocalStrage(talker, isMyself) {
+    if (isMyself) {
+      let myInfo = {};
+      let k = "myinfo" + timestamp;
+      let local = localStorage.getItem(k)
+      if (local && local != '') {
+        myInfo = JSON.parse(local);
+      } else {
+        $.ajax({
+          url: ' http://' + host + '/api/user/myinfo',
+          type: 'GET',
+          jsonp: true,
+          async: false,
+          dataType: 'json',
+          success: function (data) {
+            myInfo = data;
+            localStorage.setItem(k, JSON.stringify(myInfo));
+          }
+        });
+      }
+      return myInfo;
+    } else {
+      let local = localStorage.getItem(talker)
+      let userInfo = {}
+      if (local && local != '') {
+        userInfo = JSON.parse(local);
+      } else {
+        userInfo = getUserInfo(talker);
+        localStorage.setItem(talker, JSON.stringify(userInfo));
+      }
+      return userInfo;
+
+    }
   }
 }) 

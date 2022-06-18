@@ -108,3 +108,20 @@ func (em EnMicroMsg) UserInfo(username string) UserInfo {
 	}
 	return r
 }
+
+func (em EnMicroMsg) MyInfo() UserInfo {
+	r := UserInfo{}
+	querySql := "select rc.username,rc.alias,rc.conRemark,rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc left join img_flag imf on rc.username=imf.username where rc.username=(select value from userinfo WHERE id = 2)"
+	rows, err := em.db.Query(querySql)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	return r
+}

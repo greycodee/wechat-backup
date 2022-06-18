@@ -98,6 +98,14 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		}
 		w.Write(result)
 	},
+	"/api/user/myinfo": func(w http.ResponseWriter, r *http.Request) {
+		// 自己的信息
+		result, err := json.Marshal(enmicromsg.MyInfo())
+		if err != nil {
+			log.Fatalf("json marshal error: %v", err)
+		}
+		w.Write(result)
+	},
 	"/api/media/img": func(w http.ResponseWriter, r *http.Request) {
 		// 图片
 		params := r.URL.Query()
