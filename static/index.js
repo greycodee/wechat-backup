@@ -93,9 +93,11 @@ $(function () {
     let n1 = typeof (userInfo.conRemark) == 'undefined' || userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
     let n2 = n1 == "" ? userInfo.alias : n1;
     let n3 = n2 == "" ? userInfo.userName : n2;
+    let img1 = typeof (item.reserved2) == 'undefined' || item.reserved2 == "" ? item.reserved1 : item.reserved2;
+    let img2 = img1 == "" ? item.localAvatar : img1;
     let div = `<div class="answer ${position}">
               <div class="avatar">
-                <img src="${userInfo.reserved2}" alt="${n3}">
+                <img src="${img2}" alt="${n3}">
               </div>
               <div class="name">${n3}</div>
               <div class="text">
@@ -117,10 +119,11 @@ $(function () {
       success: function (data) {
         jQuery.each(data.rows, function (i, item) {
           let name = typeof (item.conRemark) == 'undefined' || item.conRemark == "" ? item.nickname : item.conRemark;
-          let img = typeof (item.reserved2) == 'undefined' || item.reserved2 == "" ? item.reserved1 : item.reserved2;
+          let img1 = typeof (item.reserved2) == 'undefined' || item.reserved2 == "" ? item.reserved1 : item.reserved2;
+          let img2 = img1 == "" ? item.localAvatar : img1;
           let li = `<li class="list-group-item d-flex justify-content-between align-items-start" id="${item.talker}">
                       <div class="avatar">
-                          <img src="${item.reserved2}" alt="头像">
+                          <img src="${img2}" alt="头像">
                       </div>
                       <div class="ms-2 me-auto chat-list-item">
                           <div class="fw-bold chat-title">${name}</div>

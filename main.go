@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"encoding/json"
+	"flag"
 	"io/fs"
 	"log"
 	"net"
@@ -18,19 +19,29 @@ var wxfileindex *db.WxFileIndex
 //go:embed static
 var htmlFile embed.FS
 
-var serverPort = "8080"
+// var serverPort = "8080"
 
-var basePath = "/mnt/d/wcdb/hui"
+// var basePath = "/mnt/d/wcdb/hui"
+
+var serverPort = flag.String("p", "9999", "server port")
+var basePath = flag.String("f", "", "wechat bak folder")
+
+func init() {
+	flag.Parse()
+	if basePath == nil || *basePath == "" {
+		panic("please specify basePath")
+	}
+}
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg(basePath + "/enmicromsg_plaintext.db")
-	wxfileindex = db.OpenWxFileIndex(basePath + "/wxfileindex_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg(*basePath + "/enmicromsg_plaintext.db")
+	wxfileindex = db.OpenWxFileIndex(*basePath + "/wxfileindex_plaintext.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
 
 	// 文件路由
-	fs := http.FileServer(http.Dir(basePath))
+	fs := http.FileServer(http.Dir(*basePath))
 	http.Handle("/media/", http.StripPrefix("/media/", fs))
 
 	http.Handle("/", staticHandle)
@@ -41,11 +52,11 @@ func main() {
 	for _, address := range interfaceAddr {
 		ipNet, _ := address.(*net.IPNet)
 		if ipNet.IP.To4() != nil {
-			log.Printf("server addr http://%s:%s", ipNet.IP.String(), serverPort)
+			log.Printf("server addr http://%s:%s", ipNet.IP.String(), *serverPort)
 		}
 	}
 
-	err := http.ListenAndServe(":"+serverPort, nil)
+	err := http.ListenAndServe(":"+*serverPort, nil)
 	if err != nil {
 		log.Fatalf("ListenAndServe: %v", err)
 	}

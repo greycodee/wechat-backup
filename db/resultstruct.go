@@ -6,14 +6,15 @@ type ChatList struct {
 }
 
 type ChatListRow struct {
-	Talker     string `json:"talker"`
-	NickName   string `json:"nickname"`
-	ConRemark  string `json:"conRemark"`
-	Reserved1  string `json:"reserved1"`
-	Reserved2  string `json:"reserved2"`
-	MsgCount   int    `json:"msgCount"`
-	CreateTime int64  `json:"createTime"`
-	ChatType   int    `json:"chatType"`
+	Talker      string `json:"talker"`
+	NickName    string `json:"nickname"`
+	ConRemark   string `json:"conRemark"`
+	Reserved1   string `json:"reserved1"`
+	Reserved2   string `json:"reserved2"`
+	LocalAvatar string `json:"localAvatar"`
+	MsgCount    int    `json:"msgCount"`
+	CreateTime  int64  `json:"createTime"`
+	ChatType    int    `json:"chatType"`
 }
 
 type ChatDetailList struct {
@@ -31,10 +32,11 @@ type ChatDetailListRow struct {
 }
 
 type UserInfo struct {
-	UserName  string `json:"userName"`
-	Alias     string `json:"alias"`
-	ConRemark string `json:"conRemark"`
-	NickName  string `json:"nickName"`
-	Reserved1 string `json:"reserved1"`
-	Reserved2 string `json:"reserved2"`
+	UserName    string `json:"userName"`
+	Alias       string `json:"alias"`
+	ConRemark   string `json:"conRemark"`
+	NickName    string `json:"nickName"`
+	Reserved1   string `json:"reserved1"`
+	Reserved2   string `json:"reserved2"`
+	LocalAvatar string `json:"localAvatar"`
 }

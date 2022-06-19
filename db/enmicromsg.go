@@ -1,6 +1,7 @@
 package db
 
 import (
+	"crypto/md5"
 	"database/sql"
 	"fmt"
 	"log"
@@ -53,6 +54,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
 		if err != nil {
 			log.Fatal(err)
 		}
+		r.LocalAvatar = em.getLocalAvatar(r.Talker)
 		result.Rows = append(result.Rows, r)
 	}
 	err = rows.Err()
@@ -117,6 +119,7 @@ func (em EnMicroMsg) UserInfo(username string) UserInfo {
 			log.Fatal(err)
 		}
 	}
+	r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	return r
 }
 
@@ -134,5 +137,12 @@ func (em EnMicroMsg) MyInfo() UserInfo {
 			log.Fatal(err)
 		}
 	}
+	r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	return r
+}
+
+func (em EnMicroMsg) getLocalAvatar(username string) string {
+	md5Str := fmt.Sprintf("%x", md5.Sum([]byte(username)))
+	filePath := fmt.Sprintf("/media/%s/%s/%s/user_%s.png", "avatar", md5Str[0:2], md5Str[2:4], md5Str)
+	return filePath
 }
