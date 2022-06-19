@@ -116,12 +116,14 @@ $(function () {
       dataType: 'json',
       success: function (data) {
         jQuery.each(data.rows, function (i, item) {
+          let name = typeof (item.conRemark) == 'undefined' || item.conRemark == "" ? item.nickname : item.conRemark;
+          let img = typeof (item.reserved2) == 'undefined' || item.reserved2 == "" ? item.reserved1 : item.reserved2;
           let li = `<li class="list-group-item d-flex justify-content-between align-items-start" id="${item.talker}">
                       <div class="avatar">
                           <img src="${item.reserved2}" alt="头像">
                       </div>
                       <div class="ms-2 me-auto chat-list-item">
-                          <div class="fw-bold chat-title">${item.nickname}</div>
+                          <div class="fw-bold chat-title">${name}</div>
                           <div class="fw-bold chat-talker">talker: ${item.talker}</div>
                       </div>
                     <span class="badge rounded-pill">${item.msgCount}</span>

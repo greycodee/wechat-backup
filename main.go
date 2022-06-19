@@ -20,7 +20,7 @@ var htmlFile embed.FS
 
 var serverPort = "8080"
 
-var basePath = "/Users/zheng/Documents/wcdb"
+var basePath = "/mnt/d/wcdb/hui"
 
 func main() {
 	enmicromsg = db.OpenEnMicroMsg(basePath + "/enmicromsg_plaintext.db")
