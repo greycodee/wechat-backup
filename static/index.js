@@ -8,10 +8,9 @@ $(function () {
   $(".chat").niceScroll();
   $(".chat-list").niceScroll();
 
-  addUserChatList(1, 50);
+  addUserChatList(1, 110);
 
-  //  = $(".chat").scrollHeight // 滚动高度至最底部
-  // $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height());
+ // 滚动高度至最底部
   $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
 
 
@@ -21,22 +20,21 @@ $(function () {
   }
 
   function getText(chat) {
-    let mediaPath = 'media/' + getMediaPath(chat.msgId, chat.type)
     switch (chat.type) {
       case 1:
         return chat.content;
       case 3:
-        return '<img src="' + mediaPath + '" alt="图片" width="100" height="200" >';
+        return '<a href="'+chat.mediaBCKPath+'"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
       case 34:
         // 语音由于将amr转换成了mp3，所以这里的路径是mp3
-        mediaPath = mediaPath.split('.')[0] + '.mp3';
+        // mediaPath = mediaPath.split('.')[0] + '.mp3';
         return `<audio controls>
-                    <source src="`+ mediaPath + `" type="audio/mpeg">
+                    <source src="`+ chat.mediaPath + `" type="audio/mpeg">
                     您的浏览器不支持 audio 元素。
                   </audio>`;
       case 43:
         return `<video controls width="250"> -->
-                    <source src="`+ mediaPath + `">
+                    <source src="`+ chat.mediaPath + `">
                     Sorry, your browser doesn't support embedded videos.
                   </video>`;
       case 47:
@@ -93,8 +91,8 @@ $(function () {
     let n1 = typeof (userInfo.conRemark) == 'undefined' || userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
     let n2 = n1 == "" ? userInfo.alias : n1;
     let n3 = n2 == "" ? userInfo.userName : n2;
-    let img1 = typeof (item.reserved2) == 'undefined' || item.reserved2 == "" ? item.reserved1 : item.reserved2;
-    let img2 = img1 == "" ? item.localAvatar : img1;
+    let img1 = typeof (userInfo.reserved2) == 'undefined' || userInfo.reserved2 == "" ? userInfo.reserved1 : userInfo.reserved2;
+    let img2 = img1 == "" ? userInfo.localAvatar : img1;
     let div = `<div class="answer ${position}">
               <div class="avatar">
                 <img src="${img2}" alt="${n3}">
@@ -168,31 +166,6 @@ $(function () {
       }
     });
     return info;
-  }
-
-  function getMediaPath(msgId, type) {
-    let url = ''
-    let imgPath = ''
-    switch (type) {
-      case 3:
-        url = 'http://' + host + '/api/media/img?msgId=' + msgId;
-        break;
-      case 34:
-        url = 'http://' + host + '/api/media/voice?msgId=' + msgId;
-        break;
-      case 43:
-        url = 'http://' + host + '/api/media/video?msgId=' + msgId;
-        break;
-    }
-    $.ajax({
-      url: url,
-      type: 'GET',
-      async: false,
-      success: function (data) {
-        imgPath = data;
-      }
-    });
-    return imgPath;
   }
 
   function getUserInfoLocalStrage(talker, isMyself) {
