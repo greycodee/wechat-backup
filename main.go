@@ -78,7 +78,8 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		params := r.URL.Query()
 		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
 		pageSize, _ := strconv.Atoi(params["pageSize"][0])
-		result, err := json.Marshal(enmicromsg.ChatList(pageIndex-1, pageSize))
+		all, _ := strconv.ParseBool(params["all"][0])
+		result, err := json.Marshal(enmicromsg.ChatList(pageIndex-1, pageSize, all))
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}

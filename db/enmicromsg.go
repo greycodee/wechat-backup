@@ -32,11 +32,17 @@ func (em *EnMicroMsg) Close() {
 	em.db.Close()
 }
 
-func (em EnMicroMsg) ChatList(pageIndex int, pageSize int) *ChatList {
+func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 	result := &ChatList{}
 	result.Total = 10
 	result.Rows = make([]ChatListRow, 0)
-	queryRowsSql := fmt.Sprintf("select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
+	var queryRowsSql string
+	if all {
+		queryRowsSql = "select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc"
+	} else {
+		queryRowsSql = fmt.Sprintf("select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
+
+	}
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
 		fmt.Println(err)

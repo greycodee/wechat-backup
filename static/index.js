@@ -8,7 +8,7 @@ $(function () {
   $(".chat").niceScroll();
   $(".chat-list").niceScroll();
 
-  addUserChatList(1, 110);
+  addUserChatList(0,0,true);
 
   // 滚动高度至最底部
   $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
@@ -111,9 +111,15 @@ $(function () {
   }
 
   // 聊天列表初始化
-  function addUserChatList(pageIndex, pageSize) {
+  function addUserChatList(pageIndex, pageSize, all) {
+    let url = '';
+    if (all) {
+      url = ' http://' + host + '/api/chat/list?all=true&pageIndex=' + pageIndex + '&pageSize=' + pageSize + '';
+    }else{
+      url = ' http://' + host + '/api/chat/list?pageIndex=' + pageIndex + '&pageSize=' + pageSize + '';
+    }
     $.ajax({
-      url: ' http://' + host + '/api/chat/list?pageIndex=' + pageIndex + '&pageSize=' + pageSize + '',
+      url: url,
       type: 'GET',
       jsonp: true,
       async: false,
