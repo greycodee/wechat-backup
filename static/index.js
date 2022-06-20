@@ -10,7 +10,7 @@ $(function () {
 
   addUserChatList(1, 110);
 
- // 滚动高度至最底部
+  // 滚动高度至最底部
   $('.chat').getNiceScroll(0).doScrollTop($('.chat-body').height(), -1); // -1 is the animation duration
 
 
@@ -24,7 +24,7 @@ $(function () {
       case 1:
         return chat.content;
       case 3:
-        return '<a href="'+chat.mediaBCKPath+'"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
+        return '<a href="' + chat.mediaBCKPath + '"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
       case 34:
         // 语音由于将amr转换成了mp3，所以这里的路径是mp3
         // mediaPath = mediaPath.split('.')[0] + '.mp3';
@@ -40,11 +40,16 @@ $(function () {
       case 47:
         return '[大表情]';
       case 49:
-        return '[文件]';
+        return '[卡片信息]';
       case 436207665:
         return '[微信红包]';
       case 419430449:
         return '[微信转账]';
+      case 1090519089:
+        return '[文件]';
+      case 10000:
+        // 撤回消息
+        return '[撤回]'+chat.content;
       default:
         return '[未知消息]';
     }
@@ -86,7 +91,6 @@ $(function () {
   function addChatBody(item) {
     let position = item.isSend == 0 ? 'left' : 'right';
     let userInfo = item.isSend == 0 ? getUserInfoLocalStrage(item.talker, false) : getUserInfoLocalStrage('', true);
-    console.log(userInfo);
 
     let n1 = typeof (userInfo.conRemark) == 'undefined' || userInfo.conRemark == "" ? userInfo.nickName : userInfo.conRemark;
     let n2 = n1 == "" ? userInfo.alias : n1;
@@ -137,8 +141,7 @@ $(function () {
 
   $("ul li").click(function () {
     let talker = $(this).attr('id');
-    console.log(talker)
-    noneData=false;
+    noneData = false;
     // 更新聊天框
     $("li").removeClass("active");
     $(this).addClass("active");
@@ -203,7 +206,7 @@ $(function () {
     }
   }
 
-  function moreData(talker){
+  function moreData(talker) {
     if (!noneData) {
       pageIndex++;
       addChatList(talker, pageIndex, pageSize, true);
