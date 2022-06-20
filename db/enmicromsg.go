@@ -137,7 +137,7 @@ func (em EnMicroMsg) GetUserInfo(username string) UserInfo {
 
 func (em EnMicroMsg) GetMyInfo() UserInfo {
 	r := UserInfo{}
-	querySql := "select rc.username,rc.alias,rc.conRemark,rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc left join img_flag imf on rc.username=imf.username where rc.username=(select value from userinfo WHERE id = 2)"
+	querySql := "select rc.username,rc.alias,ifnull(rc.conRemark,''),rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc left join img_flag imf on rc.username=imf.username where rc.username=(select value from userinfo WHERE id = 2)"
 	rows, err := em.db.Query(querySql)
 	if err != nil {
 		fmt.Println(err)
