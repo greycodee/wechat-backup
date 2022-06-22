@@ -23,7 +23,7 @@ var htmlFile embed.FS
 // var basePath = "/mnt/d/wcdb/hui"
 
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "/Users/zheng/Documents/wcdb", "wechat bak folder")
+var basePath = flag.String("f", "/mnt/d/WeChatBak/z-10086-h/2022-06-19", "wechat bak folder")
 
 func init() {
 	flag.Parse()
