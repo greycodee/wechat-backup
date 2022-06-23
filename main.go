@@ -33,7 +33,7 @@ func init() {
 }
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg(*basePath + "/enmicromsg_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg(*basePath + "/EnMicroMsg_plain.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
