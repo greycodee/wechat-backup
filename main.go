@@ -19,7 +19,7 @@ var enmicromsg *db.EnMicroMsg
 var htmlFile embed.FS
 
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "/Users/zheng/Documents/wcdb", "wechat bak folder")
+var basePath = flag.String("f", "", "wechat bak folder")
 
 func init() {
 	flag.Parse()
