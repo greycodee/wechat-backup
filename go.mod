@@ -1,4 +1,4 @@
-module github.com/greycodee/wcdb-parse
+module github.com/greycodee/wechat-backup
 
 go 1.17
 

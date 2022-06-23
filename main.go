@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/greycodee/wcdb-parse/db"
+	"github.com/greycodee/wechat-backup/db"
 )
 
 var enmicromsg *db.EnMicroMsg
