@@ -18,12 +18,8 @@ var enmicromsg *db.EnMicroMsg
 //go:embed static
 var htmlFile embed.FS
 
-// var serverPort = "8080"
-
-// var basePath = "/mnt/d/wcdb/hui"
-
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "/mnt/d/WeChatBak/z-10086-h/2022-06-19", "wechat bak folder")
+var basePath = flag.String("f", "", "wechat bak folder")
 
 func init() {
 	flag.Parse()
@@ -33,7 +29,7 @@ func init() {
 }
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg(*basePath + "/enmicromsg_plaintext.db")
+	enmicromsg = db.OpenEnMicroMsg(*basePath + "/EnMicroMsg_plain.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
