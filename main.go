@@ -20,7 +20,7 @@ var wxfileindex *db.WxFileIndex
 var htmlFile embed.FS
 
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "/Users/zheng/Documents/wechat-back/z-10086-h", "wechat bak folder")
+var basePath = flag.String("f", "", "wechat bak folder")
 
 func init() {
 	flag.Parse()
