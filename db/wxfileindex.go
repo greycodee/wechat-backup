@@ -8,8 +8,9 @@ import (
 )
 
 type WxFileIndex struct {
-	DBPath string
-	db     *sql.DB
+	DBPath    string
+	db        *sql.DB
+	tableName string
 }
 
 func OpenWxFileIndex(dbPath string) *WxFileIndex {
@@ -17,7 +18,14 @@ func OpenWxFileIndex(dbPath string) *WxFileIndex {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &WxFileIndex{dbPath, db}
+	// 查询表名
+	var tableName string
+	querySql := "SELECT name _id FROM sqlite_master WHERE type ='table' limit 1"
+	err = db.QueryRow(querySql).Scan(&tableName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &WxFileIndex{dbPath, db, tableName}
 }
 
 func (wf *WxFileIndex) Close() {
@@ -26,7 +34,7 @@ func (wf *WxFileIndex) Close() {
 
 func (wf WxFileIndex) GetImgPath(msgId string) string {
 	var path string
-	querySql := fmt.Sprintf("select path from WxFileIndex2 WHERE msgId=%s and msgSubType=20", msgId)
+	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s and msgSubType=20", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
 		log.Fatal(err)
@@ -36,7 +44,7 @@ func (wf WxFileIndex) GetImgPath(msgId string) string {
 
 func (wf WxFileIndex) GetVideoPath(msgId string) string {
 	var path string
-	querySql := fmt.Sprintf("select path from WxFileIndex2 WHERE msgId=%s and msgSubType=1", msgId)
+	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s and msgSubType=1", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +54,7 @@ func (wf WxFileIndex) GetVideoPath(msgId string) string {
 
 func (wf WxFileIndex) GetVoicePath(msgId string) string {
 	var path string
-	querySql := fmt.Sprintf("select path from WxFileIndex2 WHERE msgId=%s", msgId)
+	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
 		log.Fatal(err)
