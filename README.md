@@ -37,3 +37,14 @@ $ docker run --rm -v /Users/zheng/Documents/voice2:/media  greycodee/silkv3-deco
 /media/msg_491351061422dbfa9bb0a84104.amr
 -e [OK] Convert /media/msg_491351061422dbfa9bb0a84104.amr To /media/msg_491351061422dbfa9bb0a84104.mp3 Finish.
 ```
+## 手机没有 ROOT 解决方法
+如果没有有 ROOT 的手机，根据 V 友的说法，使用安卓模拟器的话有一定的封号机率。这个还有一个方法就是使用手机自带的系统备份。
+我自己是miui系统的手机，整理了大致方法如下：
+
+在手机设置里找到备份功能，然后备份微信应用数据
+备份的数据放在手机的 MIUI/backup/AllBackup/备份的日期/ 下
+里面有三个文件 分别是 .bak .zip .xml 结尾
+zip 可以直接解压，然后获取聊天语音和聊天视频等文件
+bak 需要使用 HEX 编辑器打开，然后将 41 4E 前的数据删除（就是这个文件的描述数据）。然后保存
+使用 abe 解包工具进行 .bak 文件的解包，开源工具地址：https://github.com/nelenkov/android-backup-extractor
+解压解包后生产的 tar 压缩包，然后从里面可以获取到 DB 等文件（相当于本来要ROOT后才能获取到的这些数据，现在可以直接获取了）
