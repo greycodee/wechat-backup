@@ -23,6 +23,7 @@ func OpenWxFileIndex(dbPath string) *WxFileIndex {
 	querySql := "SELECT name _id FROM sqlite_master WHERE type ='table' limit 1"
 	err = db.QueryRow(querySql).Scan(&tableName)
 	if err != nil {
+		log.Printf("未查询到图片索引表名,%s", err)
 		log.Fatal(err)
 	}
 	return &WxFileIndex{dbPath, db, tableName}
@@ -37,9 +38,12 @@ func (wf WxFileIndex) GetImgPath(msgId string) string {
 	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s and msgSubType=20", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("未查询到图片地址,%s", err)
+		return ""
+	} else {
+		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
 	}
-	return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+
 }
 
 func (wf WxFileIndex) GetVideoPath(msgId string) string {
@@ -49,7 +53,11 @@ func (wf WxFileIndex) GetVideoPath(msgId string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+	if err != nil {
+		return ""
+	} else {
+		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+	}
 }
 
 func (wf WxFileIndex) GetVoicePath(msgId string) string {
@@ -59,5 +67,9 @@ func (wf WxFileIndex) GetVoicePath(msgId string) string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+	if err != nil {
+		return ""
+	} else {
+		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+	}
 }

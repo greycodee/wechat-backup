@@ -63,33 +63,19 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 			}
 		}
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("未查询到聊天列表,%s", err)
 		}
 		r.LocalAvatar = em.getLocalAvatar(r.Talker)
 		result.Rows = append(result.Rows, r)
 	}
-	err = rows.Err()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	queryTotalSql := "select count(*) as total FROM (select msg.talker from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker) as d"
-	totalRows, err := em.db.Query(queryTotalSql)
+	var total int
+	err = em.db.QueryRow(queryTotalSql).Scan(&total)
 	if err != nil {
-		fmt.Println(err)
-	}
-	defer totalRows.Close()
-	for totalRows.Next() {
-		var total int
-		err = totalRows.Scan(&total)
-		if err != nil {
-			log.Fatal(err)
-		}
+		log.Printf("未查询到聊天列表总数,%s", err)
+	} else {
 		result.Total = total
-	}
-	err = totalRows.Err()
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	return result
@@ -99,7 +85,7 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, 
 	result := &ChatDetailList{}
 	result.Total = 10
 	result.Rows = make([]ChatDetailListRow, 0)
-	queryRowsSql := fmt.Sprintf("SELECT ifnull(msgId,''),ifnull(msgSvrId,''),type,isSend,createTime,talker,ifnull(content,''),ifnull(imgPath,'') as imgPath FROM message WHERE talker='%s' order by createtime desc limit %d,%d", talker, pageIndex*pageSize, pageSize)
+	queryRowsSql := fmt.Sprintf("SELECT ifnull(msgId,'') as msgId,ifnull(msgSvrId,'') as msgSvrId,type,isSend,createTime,talker,ifnull(content,'') as content,ifnull(imgPath,'') as imgPath FROM message WHERE talker='%s' order by createtime desc limit %d,%d", talker, pageIndex*pageSize, pageSize)
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
 		fmt.Println(err)
@@ -109,7 +95,7 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, 
 		var r ChatDetailListRow
 		err = rows.Scan(&r.MsgId, &r.MsgSvrId, &r.Type, &r.IsSend, &r.CreateTime, &r.Talker, &r.Content, &r.ImgPath)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("未查询到聊天历史记录,%s", err)
 		}
 		em.getMediaPath(&r, wxfileindex)
 		result.Rows = append(result.Rows, r)
@@ -120,16 +106,11 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, 
 func (em EnMicroMsg) GetUserInfo(username string) UserInfo {
 	r := UserInfo{}
 	querySql := fmt.Sprintf("select rc.username,rc.alias,rc.conRemark,rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc LEFT JOIN img_flag imf on rc.username=imf.username where rc.username='%s';", username)
-	rows, err := em.db.Query(querySql)
+	err := em.db.QueryRow(querySql).Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
 	if err != nil {
-		fmt.Println(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
-		if err != nil {
-			log.Fatal(err)
-		}
+		log.Printf("未查询到用户信息,%s", err)
+	} else {
+		r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	}
 	r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	return r
@@ -138,18 +119,12 @@ func (em EnMicroMsg) GetUserInfo(username string) UserInfo {
 func (em EnMicroMsg) GetMyInfo() UserInfo {
 	r := UserInfo{}
 	querySql := "select rc.username,rc.alias,ifnull(rc.conRemark,''),rc.nickname,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2 from rcontact rc left join img_flag imf on rc.username=imf.username where rc.username=(select value from userinfo WHERE id = 2)"
-	rows, err := em.db.Query(querySql)
+	err := em.db.QueryRow(querySql).Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("未查询到个人信息,%s", err)
+	} else {
+		r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	}
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(&r.UserName, &r.Alias, &r.ConRemark, &r.NickName, &r.Reserved1, &r.Reserved2)
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	r.LocalAvatar = em.getLocalAvatar(r.UserName)
 	return r
 }
 
