@@ -24,7 +24,7 @@ $(function () {
       case 1:
         return chat.content;
       case 3:
-        return '<a href="' + chat.mediaBCKPath + '"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
+        return '<a href="' + chat.mediaSourcePath + '"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
       case 34:
         // 语音由于将amr转换成了mp3，所以这里的路径是mp3
         // mediaPath = mediaPath.split('.')[0] + '.mp3';
@@ -219,5 +219,30 @@ $(function () {
     } else {
       alert('没有更多数据了');
     }
+  }
+
+  function getMediaPath(msgId, type) {
+    let url = ''
+    let mediaPath = ''
+    switch (type) {
+      case 3:
+        url = 'http://' + host + '/api/media/img?msgId=' + msgId;
+        break;
+      case 34:
+        url = 'http://' + host + '/api/media/voice?msgId=' + msgId;
+        break;
+      case 43:
+        url = 'http://' + host + '/api/media/video?msgId=' + msgId;
+        break;
+    }
+    $.ajax({
+      url: url,
+      type: 'GET',
+      async: false,
+      success: function (data) {
+        mediaPath = data;
+      }
+    });
+    return mediaPath;
   }
 }) 

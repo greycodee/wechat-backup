@@ -14,12 +14,13 @@ import (
 )
 
 var enmicromsg *db.EnMicroMsg
+var wxfileindex *db.WxFileIndex
 
 //go:embed static
 var htmlFile embed.FS
 
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "", "wechat bak folder")
+var basePath = flag.String("f", "/Users/zheng/Documents/wechat-back/z-10086-h", "wechat bak folder")
 
 func init() {
 	flag.Parse()
@@ -30,6 +31,7 @@ func init() {
 
 func main() {
 	enmicromsg = db.OpenEnMicroMsg(*basePath + "/EnMicroMsg_plain.db")
+	wxfileindex = db.OpenWxFileIndex(*basePath + "/WxFileIndex_plain.db")
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
@@ -88,7 +90,7 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
 		pageSize, _ := strconv.Atoi(params["pageSize"][0])
 
-		result, err := json.Marshal(enmicromsg.ChatDetailList(talker, pageIndex-1, pageSize))
+		result, err := json.Marshal(enmicromsg.ChatDetailList(talker, pageIndex-1, pageSize, wxfileindex))
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}
@@ -111,5 +113,23 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 			log.Fatalf("json marshal error: %v", err)
 		}
 		w.Write(result)
+	},
+	"/api/media/img": func(w http.ResponseWriter, r *http.Request) {
+		// 图片
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetImgPath(msgId)))
+	},
+	"/api/media/video": func(w http.ResponseWriter, r *http.Request) {
+		// 视频
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetVideoPath(msgId)))
+	},
+	"/api/media/voice": func(w http.ResponseWriter, r *http.Request) {
+		// 语音
+		params := r.URL.Query()
+		msgId := params["msgId"][0]
+		w.Write([]byte(wxfileindex.GetVoicePath(msgId)))
 	},
 }

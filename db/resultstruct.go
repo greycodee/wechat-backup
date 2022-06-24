@@ -22,16 +22,17 @@ type ChatDetailList struct {
 	Rows  []ChatDetailListRow `json:"rows"`
 }
 type ChatDetailListRow struct {
-	MsgId        string `json:"msgId"`
-	MsgSvrId     string `json:"msgSvrId"`
-	Type         int    `json:"type"`
-	IsSend       int    `json:"isSend"`
-	CreateTime   int64  `json:"createTime"`
-	Talker       string `json:"talker"`
-	Content      string `json:"content"`
-	ImgPath      string `json:"imgPath"`
-	MediaPath    string `json:"mediaPath"`
-	MediaBCKPath string `json:"mediaBCKPath"`
+	MsgId           string `json:"msgId"`
+	MsgSvrId        string `json:"msgSvrId"`
+	Type            int    `json:"type"`
+	IsSend          int    `json:"isSend"`
+	CreateTime      int64  `json:"createTime"`
+	Talker          string `json:"talker"`
+	Content         string `json:"content"`
+	ImgPath         string `json:"imgPath"`
+	MediaPath       string `json:"mediaPath"`
+	MediaBCKPath    string `json:"mediaBCKPath"`
+	MediaSourcePath string `json:"mediaSourcePath"`
 }
 
 type UserInfo struct {

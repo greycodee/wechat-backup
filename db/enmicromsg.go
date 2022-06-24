@@ -95,11 +95,11 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 	return result
 }
 
-func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) *ChatDetailList {
+func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, wxfileindex *WxFileIndex) *ChatDetailList {
 	result := &ChatDetailList{}
 	result.Total = 10
 	result.Rows = make([]ChatDetailListRow, 0)
-	queryRowsSql := fmt.Sprintf("SELECT msgId,msgSvrId,type,isSend,createTime,talker,content,ifnull(imgPath,'') as imgPath FROM message WHERE talker='%s' order by createtime desc limit %d,%d", talker, pageIndex*pageSize, pageSize)
+	queryRowsSql := fmt.Sprintf("SELECT ifnull(msgId,''),ifnull(msgSvrId,''),type,isSend,createTime,talker,ifnull(content,''),ifnull(imgPath,'') as imgPath FROM message WHERE talker='%s' order by createtime desc limit %d,%d", talker, pageIndex*pageSize, pageSize)
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
 		fmt.Println(err)
@@ -111,7 +111,7 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) 
 		if err != nil {
 			log.Fatal(err)
 		}
-		em.getMediaPath(&r)
+		em.getMediaPath(&r, wxfileindex)
 		result.Rows = append(result.Rows, r)
 	}
 	return result
@@ -184,12 +184,13 @@ func (em EnMicroMsg) formatVideoPath(path string) string {
 	return fmt.Sprintf("%svideo/%s.mp4", MediaPathPrefix, path)
 }
 
-func (em EnMicroMsg) getMediaPath(chat *ChatDetailListRow) {
+func (em EnMicroMsg) getMediaPath(chat *ChatDetailListRow, wxfileindex *WxFileIndex) {
 	switch chat.Type {
 	case 3:
 		// 图片
 		chat.MediaPath = em.formatImagePath(chat.ImgPath)
 		chat.MediaBCKPath = em.formatImageBCKPath(*chat)
+		chat.MediaSourcePath = wxfileindex.GetImgPath(chat.MsgId)
 		break
 	case 34:
 		// 语音
