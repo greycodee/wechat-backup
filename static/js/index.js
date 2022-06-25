@@ -162,7 +162,7 @@ $(function () {
     $("li").removeClass("active");
     $(this).addClass("active");
     $(".chat-body").html('');
-    let more = `<div class="divide" ><i class="fa fa-arrow-circle-o-right"></i></div>`;
+    let more = `<div class="divide" >加载更多</div>`;
     $(".chat-body").prepend(more);
     $('.divide').click(function () {
       moreData(talker);
