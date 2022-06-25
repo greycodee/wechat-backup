@@ -24,7 +24,8 @@ $(function () {
       case 1:
         return chat.content;
       case 3:
-        return '<a href="' + chat.mediaSourcePath + '"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
+        let rawImage = chat.mediaSourcePath==""?chat.mediaBCKPath:chat.mediaSourcePath;
+        return '<a href="' + rawImage + '"><img src="' + chat.mediaPath + '" alt="图片" width="100" height="200" ></a>';
       case 34:
         // 语音由于将amr转换成了mp3，所以这里的路径是mp3
         // mediaPath = mediaPath.split('.')[0] + '.mp3';

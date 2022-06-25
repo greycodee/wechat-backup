@@ -26,6 +26,8 @@ func OpenWxFileIndex(dbPath string) *WxFileIndex {
 		log.Printf("未查询到图片索引表名,%s", err)
 		log.Fatal(err)
 	}
+	log.Printf("文件索引表名: %s", tableName)
+	log.Printf("请打开 WxFileIndex.db 确认 %s 表里是否有数据，如果没有数据，请删除该表", tableName)
 	return &WxFileIndex{dbPath, db, tableName}
 }
 
