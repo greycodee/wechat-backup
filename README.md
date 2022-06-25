@@ -54,3 +54,10 @@ $ docker run --rm -v /Users/zheng/Documents/voice2:/media  greycodee/silkv3-deco
 
 > 我这边通过系统备份然后 bak 文件解包-解压后，文件路径在：apps/com.tencent.mm/r/MicroMsg/ 下，大家可以参考一下
 > 如果通过手机系统自带的备份来获取数据时，解密 DB 的密码可以通过这篇文章的方法一来获取： [获取 DB 解密密码](https://greycode.top/posts/android-wechat-bak/#%E8%8E%B7%E5%8F%96-db-%E8%AE%BF%E9%97%AE%E5%AF%86%E7%A0%81)
+
+## Q&A
+### 语音和视频所在文件夹
+在 `/data/data/com.tencent.mm/MicroMsg/[32位字母]` 文件夹下，有个 `account.mapping` 文件，里面对应的 `/sdcard/Android/data/com.tencent.mm/MicroMsg` 下文件夹的名称，里面存储了聊天视频和语音等文件。
+
+### 一台设备登陆多个微信怎么查找 uin？
+在 `/data/data/com.tencent.mm/shared_prefs` 文件夹下有个 `app_brand_global_sp.xml` 文件，里面存放着所有登陆过微信的 uin，然后可以用这些 uin 去解密对应的微信 DB。
