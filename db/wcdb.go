@@ -77,11 +77,11 @@ func (wcdb WCDB) getMediaPath(chat ChatDetailListRow) ChatDetailListRow {
 		fileInfo.FilePath = filepath
 		fileInfo.FileSize = formatFileSize(fileSize)
 		p := strings.Split(filepath, "/")
-		if len(p) > 2 {
+		if len(p) > 1 {
 			fileName := p[len(p)-1]
 			fileInfo.FileName = fileName
 			fext := strings.Split(fileName, ".")
-			if len(fext) > 2 {
+			if len(fext) > 1 {
 				fileInfo.FileExt = fext[len(fext)-1]
 			}
 		}
