@@ -87,7 +87,9 @@ $(function () {
           jQuery.each(data.rows, function (i, item) {
             if (chatRoomFlag) {
               item.talker = item.content.split(':', 1)[0];
-              item.content = item.content.slice(item.talker.length + 1);
+              if (item.isSend == 0) {
+                item.content = item.content.slice(item.talker.length + 1);
+              }
             }
             addChatBody(item)
             // $('.chat').getNiceScroll(0).doScrollTop(837);
