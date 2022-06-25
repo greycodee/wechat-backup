@@ -38,7 +38,7 @@ func (wf WxFileIndex) GetImgPath(msgId string) string {
 	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s and msgSubType=20", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
-		log.Printf("未查询到图片地址,%s", err)
+		log.Printf("未查询到图片,%s", err)
 		return ""
 	} else {
 		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
@@ -51,9 +51,7 @@ func (wf WxFileIndex) GetVideoPath(msgId string) string {
 	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s and msgSubType=1", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
-		log.Fatal(err)
-	}
-	if err != nil {
+		log.Printf("未查询到视频,%s", err)
 		return ""
 	} else {
 		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
@@ -65,11 +63,20 @@ func (wf WxFileIndex) GetVoicePath(msgId string) string {
 	querySql := fmt.Sprintf("select path from %s WHERE msgId=%s", wf.tableName, msgId)
 	err := wf.db.QueryRow(querySql).Scan(&path)
 	if err != nil {
-		log.Fatal(err)
-	}
-	if err != nil {
+		log.Printf("未查询到语音,%s", err)
 		return ""
 	} else {
 		return MediaPathPrefix + strings.Join(strings.SplitAfter(path, "/")[1:], "")
+	}
+}
+
+func (wf WxFileIndex) GetFilePath(msgId string) (path string, size int64) {
+	querySql := fmt.Sprintf("select path,size from %s WHERE msgId=%s", wf.tableName, msgId)
+	err := wf.db.QueryRow(querySql).Scan(&path, &size)
+	if err != nil {
+		log.Printf("未查询到文件,%s", err)
+		return "", 0
+	} else {
+		return MediaPathPrefix + path, size
 	}
 }

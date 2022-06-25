@@ -81,7 +81,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 	return result
 }
 
-func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, wxfileindex *WxFileIndex) *ChatDetailList {
+func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) *ChatDetailList {
 	result := &ChatDetailList{}
 	result.Total = 10
 	result.Rows = make([]ChatDetailListRow, 0)
@@ -97,7 +97,7 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int, 
 		if err != nil {
 			log.Printf("未查询到聊天历史记录,%s", err)
 		}
-		em.getMediaPath(&r, wxfileindex)
+		// em.getMediaPath(&r, wxfileindex)
 		result.Rows = append(result.Rows, r)
 	}
 	return result
@@ -157,25 +157,4 @@ func (em EnMicroMsg) formatVoicePath(path string) string {
 }
 func (em EnMicroMsg) formatVideoPath(path string) string {
 	return fmt.Sprintf("%svideo/%s.mp4", MediaPathPrefix, path)
-}
-
-func (em EnMicroMsg) getMediaPath(chat *ChatDetailListRow, wxfileindex *WxFileIndex) {
-	switch chat.Type {
-	case 3:
-		// 图片
-		chat.MediaPath = em.formatImagePath(chat.ImgPath)
-		chat.MediaBCKPath = em.formatImageBCKPath(*chat)
-		chat.MediaSourcePath = wxfileindex.GetImgPath(chat.MsgId)
-		break
-	case 34:
-		// 语音
-		chat.MediaPath = em.formatVoicePath(chat.ImgPath)
-		break
-	case 43:
-		// 视频
-		chat.MediaPath = em.formatVideoPath(chat.ImgPath)
-		break
-	default:
-		break
-	}
 }

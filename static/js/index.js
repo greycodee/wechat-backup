@@ -46,7 +46,17 @@ $(function () {
       case 419430449:
         return '[微信转账]';
       case 1090519089:
-        return '[文件]';
+        return `<a href="`+chat.fileInfo.filePath+`">
+                  <div style="width: 210px; height: 60px;">
+                      <div class="filedesc">
+                          <div class="title">`+chat.fileInfo.fileName+`</div>
+                          <div class="desc">`+chat.fileInfo.fileSize+`</div>
+                      </div>
+                      <div class="fileico"">
+                          <embed src="./img/`+chat.fileInfo.fileExt+`.svg" type="image/svg+xml" width="50" height="50"/>
+                      </div>
+                  </div>
+                </a>`;
       case 10000:
         // 撤回消息
         return '[撤回]'+chat.content;
@@ -80,7 +90,7 @@ $(function () {
               item.content = item.content.slice(item.talker.length + 1);
             }
             addChatBody(item)
-            $('.chat').getNiceScroll(0).doScrollTop(837);
+            // $('.chat').getNiceScroll(0).doScrollTop(837);
           }
           );
         }

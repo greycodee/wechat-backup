@@ -13,14 +13,13 @@ import (
 	"github.com/greycodee/wechat-backup/db"
 )
 
-var enmicromsg *db.EnMicroMsg
-var wxfileindex *db.WxFileIndex
+var wcdb *db.WCDB
 
 //go:embed static
 var htmlFile embed.FS
 
 var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "", "wechat bak folder")
+var basePath = flag.String("f", "/Users/zheng/Documents/wechat-back/z-10086-h", "wechat bak folder")
 
 func init() {
 	flag.Parse()
@@ -30,8 +29,8 @@ func init() {
 }
 
 func main() {
-	enmicromsg = db.OpenEnMicroMsg(*basePath + "/EnMicroMsg_plain.db")
-	wxfileindex = db.OpenWxFileIndex(*basePath + "/WxFileIndex_plain.db")
+
+	wcdb = db.InitWCDB(*basePath)
 
 	fsys, _ := fs.Sub(htmlFile, "static")
 	staticHandle := http.FileServer(http.FS(fsys))
@@ -77,7 +76,7 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
 		pageSize, _ := strconv.Atoi(params["pageSize"][0])
 		all, _ := strconv.ParseBool(params["all"][0])
-		result, err := json.Marshal(enmicromsg.ChatList(pageIndex-1, pageSize, all))
+		result, err := json.Marshal(wcdb.ChatList(pageIndex-1, pageSize, all))
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}
@@ -90,7 +89,7 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
 		pageSize, _ := strconv.Atoi(params["pageSize"][0])
 
-		result, err := json.Marshal(enmicromsg.ChatDetailList(talker, pageIndex-1, pageSize, wxfileindex))
+		result, err := json.Marshal(wcdb.ChatDetailList(talker, pageIndex-1, pageSize))
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}
@@ -100,7 +99,7 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		// 用户信息
 		params := r.URL.Query()
 		username := params["username"][0]
-		result, err := json.Marshal(enmicromsg.GetUserInfo(username))
+		result, err := json.Marshal(wcdb.GetUserInfo(username))
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}
@@ -108,7 +107,7 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 	},
 	"/api/user/myinfo": func(w http.ResponseWriter, r *http.Request) {
 		// 自己的信息
-		result, err := json.Marshal(enmicromsg.GetMyInfo())
+		result, err := json.Marshal(wcdb.GetMyInfo())
 		if err != nil {
 			log.Fatalf("json marshal error: %v", err)
 		}
@@ -118,18 +117,18 @@ var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
 		// 图片
 		params := r.URL.Query()
 		msgId := params["msgId"][0]
-		w.Write([]byte(wxfileindex.GetImgPath(msgId)))
+		w.Write([]byte(wcdb.GetImgPath(msgId)))
 	},
 	"/api/media/video": func(w http.ResponseWriter, r *http.Request) {
 		// 视频
 		params := r.URL.Query()
 		msgId := params["msgId"][0]
-		w.Write([]byte(wxfileindex.GetVideoPath(msgId)))
+		w.Write([]byte(wcdb.GetVideoPath(msgId)))
 	},
 	"/api/media/voice": func(w http.ResponseWriter, r *http.Request) {
 		// 语音
 		params := r.URL.Query()
 		msgId := params["msgId"][0]
-		w.Write([]byte(wxfileindex.GetVoicePath(msgId)))
+		w.Write([]byte(wcdb.GetVoicePath(msgId)))
 	},
 }
