@@ -8,7 +8,7 @@
 2. 收集下面这些数据，然后放在**同一个文件夹下**:
     - image2 文件夹：里面存放着所有的微信聊天图片，位置在：/data/data/com.tencent.mm/MicroMsg/[32位字母]/image2
     - voice2 文件夹：里面存放着所有的微信语音，位置在：/sdcard/Android/data/com.tencent.mm/MicroMsg/[32位字母]/voice2
-    - voide 文件夹：里面存放着所有的微信视频，位置在：/sdcard/Android/data/com.tencent.mm/MicroMsg/[32位字母]/voide
+    - video 文件夹：里面存放着所有的微信视频，位置在：/sdcard/Android/data/com.tencent.mm/MicroMsg/[32位字母]/video
     - avatar 文件夹：里面存放着所有的微信头像，位置在：/data/data/com.tencent.mm/MicroMsg/[32位字母]/avatar
     - Download 文件夹: 微信的聊天发送的文件存放在这里，位置在：/sdcard/Android/data/com.tencent.mm/MicroMsg/Download
     - EnMicroMsg.db: 微信的数据库文件，位置在：/data/data/com.tencent.mm/MicroMsg/[32位字母]/EnMicroMsg.db
