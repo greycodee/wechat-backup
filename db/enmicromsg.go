@@ -97,6 +97,10 @@ func (em EnMicroMsg) ChatDetailList(talker string, pageIndex int, pageSize int) 
 		if err != nil {
 			log.Printf("未查询到聊天历史记录,%s", err)
 		}
+		// 表情图片
+		if r.Type == 47 {
+			r.EmojiInfo = em.GetEmojiInfo(r.ImgPath)
+		}
 		// em.getMediaPath(&r, wxfileindex)
 		result.Rows = append(result.Rows, r)
 	}
@@ -157,4 +161,16 @@ func (em EnMicroMsg) formatVoicePath(path string) string {
 }
 func (em EnMicroMsg) formatVideoPath(path string) string {
 	return fmt.Sprintf("%svideo/%s.mp4", MediaPathPrefix, path)
+}
+
+//
+func (em EnMicroMsg) GetEmojiInfo(imgPath string) EmojiInfo {
+	emojiInfo := EmojiInfo{}
+	querySql := fmt.Sprintf("select md5, cdnUrl,width,height from EmojiInfo where md5='%s'", imgPath)
+
+	err := em.db.QueryRow(querySql).Scan(&emojiInfo.Md5, &emojiInfo.CDNUrl, &emojiInfo.W, &emojiInfo.H)
+	if err != nil {
+		log.Printf("未查询到Emoji,%s", err)
+	}
+	return emojiInfo
 }

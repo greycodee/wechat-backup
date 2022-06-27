@@ -22,18 +22,19 @@ type ChatDetailList struct {
 	Rows  []ChatDetailListRow `json:"rows"`
 }
 type ChatDetailListRow struct {
-	MsgId           string   `json:"msgId"`
-	MsgSvrId        string   `json:"msgSvrId"`
-	Type            int      `json:"type"`
-	IsSend          int      `json:"isSend"`
-	CreateTime      int64    `json:"createTime"`
-	Talker          string   `json:"talker"`
-	Content         string   `json:"content"`
-	ImgPath         string   `json:"imgPath"`
-	MediaPath       string   `json:"mediaPath"`
-	MediaBCKPath    string   `json:"mediaBCKPath"`
-	MediaSourcePath string   `json:"mediaSourcePath"`
-	FileInfo        FileInfo `json:"fileInfo"`
+	MsgId           string    `json:"msgId"`
+	MsgSvrId        string    `json:"msgSvrId"`
+	Type            int       `json:"type"`
+	IsSend          int       `json:"isSend"`
+	CreateTime      int64     `json:"createTime"`
+	Talker          string    `json:"talker"`
+	Content         string    `json:"content"`
+	ImgPath         string    `json:"imgPath"`
+	MediaPath       string    `json:"mediaPath"`
+	MediaBCKPath    string    `json:"mediaBCKPath"`
+	MediaSourcePath string    `json:"mediaSourcePath"`
+	FileInfo        FileInfo  `json:"fileInfo"`
+	EmojiInfo       EmojiInfo `json:"emojiInfo"`
 }
 
 type UserInfo struct {
@@ -51,4 +52,11 @@ type FileInfo struct {
 	FileSize string `json:"fileSize"`
 	FilePath string `json:"filePath"`
 	FileExt  string `json:"fileExt"`
+}
+
+type EmojiInfo struct {
+	Md5    string `json:"md5"`
+	CDNUrl string `json:"cdnUrl"`
+	W      int64  `json:"w"`
+	H      int64  `json:"h"`
 }

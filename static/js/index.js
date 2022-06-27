@@ -39,7 +39,9 @@ $(function () {
                     Sorry, your browser doesn't support embedded videos.
                   </video>`;
       case 47:
-        return '[大表情]';
+        let width = chat.emojiInfo.w > 0 ? chat.emojiInfo.w:100
+        let height = chat.emojiInfo.h > 0 ? chat.emojiInfo.h:100
+        return '<img src="' + chat.emojiInfo.cdnUrl + '" alt="图片" width="'+width+'" height="'+height+'" >';;
       case 49:
         return '[卡片信息]';
       case 436207665:
