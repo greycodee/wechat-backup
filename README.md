@@ -61,3 +61,7 @@ $ docker run --rm -v /Users/zheng/Documents/voice2:/media  greycodee/silkv3-deco
 
 ### 一台设备登陆多个微信怎么查找 uin？
 在 `/data/data/com.tencent.mm/shared_prefs` 文件夹下有个 `app_brand_global_sp.xml` 文件，里面存放着所有登陆过微信的 uin，然后可以用这些 uin 去解密对应的微信 DB。
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=greycodee/wechat-backup&type=Date)](https://star-history.com/?utm_source=bestxtools.com#greycodee/wechat-backup&Date)
