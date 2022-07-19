@@ -35,6 +35,8 @@ type ChatDetailListRow struct {
 	MediaSourcePath string    `json:"mediaSourcePath"`
 	FileInfo        FileInfo  `json:"fileInfo"`
 	EmojiInfo       EmojiInfo `json:"emojiInfo"`
+	IsChatRoom      bool      `json:"isChatRoom"`
+	UserInfo        UserInfo  `json:"userInfo"`
 }
 
 type UserInfo struct {

@@ -24,8 +24,27 @@ func (wcdb WCDB) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 func (wcdb WCDB) ChatDetailList(talker string, pageIndex int, pageSize int) *ChatDetailList {
 	result := wcdb.enmicromsg.ChatDetailList(talker, pageIndex, pageSize)
 	detailList := make([]ChatDetailListRow, 0)
+	isChatRoomFlag := false
+	if len(strings.Split(talker, "@")) == 2 {
+		isChatRoomFlag = strings.Split(talker, "@")[1] == "chatroom"
+	}
 	for _, v := range result.Rows {
-		detailList = append(detailList, wcdb.getMediaPath(v))
+		chatDetailListRow := wcdb.getMediaPath(v)
+		chatDetailListRow.IsChatRoom = isChatRoomFlag
+		username := v.Talker
+		if v.Type != 268445456 && v.Type != 10000 {
+			if isChatRoomFlag {
+				username = strings.Split(v.Content, ":")[0]
+				chatDetailListRow.Content = v.Content[len(username)+2:]
+			}
+
+			if v.IsSend == 0 {
+				chatDetailListRow.UserInfo = wcdb.enmicromsg.GetUserInfo(username)
+			} else {
+				chatDetailListRow.UserInfo = wcdb.enmicromsg.GetMyInfo()
+			}
+		}
+		detailList = append(detailList, chatDetailListRow)
 	}
 	result.Rows = detailList
 	return result
