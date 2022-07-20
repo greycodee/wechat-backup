@@ -17,8 +17,8 @@ func InitWCDB(basePath string) *WCDB {
 	return wcdb
 }
 
-func (wcdb WCDB) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
-	return wcdb.enmicromsg.ChatList(pageIndex, pageSize, all)
+func (wcdb WCDB) ChatList(pageIndex int, pageSize int, all bool, name string) *ChatList {
+	return wcdb.enmicromsg.ChatList(pageIndex, pageSize, all, name)
 }
 
 func (wcdb WCDB) ChatDetailList(talker string, pageIndex int, pageSize int) *ChatDetailList {
@@ -33,7 +33,7 @@ func (wcdb WCDB) ChatDetailList(talker string, pageIndex int, pageSize int) *Cha
 		chatDetailListRow.IsChatRoom = isChatRoomFlag
 		username := v.Talker
 		if v.Type != 268445456 && v.Type != 10000 {
-			if isChatRoomFlag {
+			if isChatRoomFlag && v.IsSend == 0 {
 				username = strings.Split(v.Content, ":")[0]
 				chatDetailListRow.Content = v.Content[len(username)+2:]
 			}

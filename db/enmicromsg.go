@@ -32,16 +32,20 @@ func (em *EnMicroMsg) Close() {
 	em.db.Close()
 }
 
-func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
+func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool, name string) *ChatList {
 	result := &ChatList{}
 	result.Total = 10
 	result.Rows = make([]ChatListRow, 0)
+	var queryRowsSqlTmp string
 	var queryRowsSql string
-	if all {
-		queryRowsSql = "select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc"
-	} else {
-		queryRowsSql = fmt.Sprintf("select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker order by msg.createTime desc limit %d,%d", pageIndex*pageSize, pageSize)
-
+	queryRowsSqlTmp = "select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username "
+	if name != "" {
+		queryRowsSqlTmp = queryRowsSqlTmp + "where nickname like '%" + name + "%'  or conRemark like '%" + name + "%'"
+	}
+	queryRowsSqlTmp = queryRowsSqlTmp + " group by msg.talker order by msg.createTime desc "
+	queryRowsSql = queryRowsSqlTmp
+	if !all {
+		queryRowsSql = queryRowsSql + fmt.Sprintf("limit %d,%d", pageIndex*pageSize, pageSize)
 	}
 	rows, err := em.db.Query(queryRowsSql)
 	if err != nil {
@@ -69,7 +73,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool) *ChatList {
 		result.Rows = append(result.Rows, r)
 	}
 
-	queryTotalSql := "select count(*) as total FROM (select msg.talker from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username group by msg.talker) as d"
+	queryTotalSql := "select count(*) as total FROM (" + queryRowsSqlTmp + ") as d"
 	var total int
 	err = em.db.QueryRow(queryTotalSql).Scan(&total)
 	if err != nil {
