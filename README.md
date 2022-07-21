@@ -17,7 +17,25 @@
 4. 进行微信聊天数据 DB 的解密
 5. 转换微信语音
 6. 运行本程序，打开控制台输出的网址，就可以查看你的聊天记录了。
-> 运行时，记得在 main.go 里指定你存放上面这些文件的目录地址
+
+### 运行命令
+> 由于程序使用了CGO，所以无法交叉编译上传 Release，所以请自行安装 Go 运行环境然后在本地编译运行。
+
+执行运行：
+
+```shell
+$ git clone https://github.com/greycodee/wechat-backup.git
+$ cd wechat-backup
+$ go run main.go -f '[替换成你的微信备份文件路径]'
+```
+
+编译后运行：
+```shell
+$ git clone https://github.com/greycodee/wechat-backup.git
+$ cd wechat-backup
+$ go build .
+$ ./wechat-backup -f '[替换成你的微信备份文件路径]'
+```
 
 > ~~注意⚠️：WxFileIndex.db 里面文数据表名老版本微信是 WxFileIndex2 ,新版本微信是 WxFileIndex3 ，请根据实际情况来设置代码 wxfileindex.go 文件中 SQL 查询的表名~~(已在代码中做处理)
 
