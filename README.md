@@ -21,7 +21,7 @@
 ### 运行命令
 > 由于程序使用了CGO，所以无法交叉编译上传 Release，所以请自行安装 Go 运行环境然后在本地编译运行。
 
-执行运行：
+可以直接运行：
 
 ```shell
 $ git clone https://github.com/greycodee/wechat-backup.git
@@ -29,7 +29,7 @@ $ cd wechat-backup
 $ go run main.go -f '[替换成你的微信备份文件路径]'
 ```
 
-编译后运行：
+或者编译后运行：
 ```shell
 $ git clone https://github.com/greycodee/wechat-backup.git
 $ cd wechat-backup
