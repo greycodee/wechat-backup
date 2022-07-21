@@ -1,0 +1,75 @@
+name: Release-Tag-Work
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Get version
+      id: get_version
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+    - name: Build
+      run: |
+        chmod +x ./build.sh
+        ./build.sh
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }} # 之前GitHub添加的Token
+      with:
+        tag_name: ${{ github.ref }} # (tag)标签名称
+        release_name: wechat-backup-${{ steps.get_version.outputs.VERSION }}
+        draft: false # 是否是草稿
+        prerelease: false # 是否是预发布
+    # 上传构建结果到 Release（把打包的tgz上传到Release）
+    - name: build TAR PACKAGE
+      run: |
+        tar -czvf wechat-backup-linux.tar.gz ./dist/wechat-backup-linux
+        tar -czvf wechat-backup-mac.tar.gz ./dist/wechat-backup-mac
+        tar -czvf wechat-backup-win.tar.gz ./dist/wechat-backup-win
+    - name: Upload Release Linux
+      id: upload-release-linux
+      uses: actions/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      with:
+        tag_name: ${{ github.ref }} # (tag)标签名称
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # 上传地址，通过创建Release获取到的
+        asset_path: ./wechat-backup-linux.tar.gz # 要上传文件
+        asset_name: wechat-backup_linux_${{ steps.get_version.outputs.VERSION }}.tar.gz # 上传后的文件名
+        asset_content_type: application/gzip
+        
+    - name: Upload Release Mac
+      id: upload-release-mac
+      uses: actions/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      with:
+        tag_name: ${{ github.ref }} # (tag)标签名称
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # 上传地址，通过创建Release获取到的
+        asset_path: ./wechat-backup-mac.tar.gz # 要上传文件
+        asset_name: wechat-backup_mac_${{ steps.get_version.outputs.VERSION }}.tar.gz # 上传后的文件名
+        asset_content_type: application/gzip
+    - name: Upload Release Win
+      id: upload-release-win
+      uses: actions/upload-release-asset@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+      with:
+        tag_name: ${{ github.ref }} # (tag)标签名称
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # 上传地址，通过创建Release获取到的
+        asset_path: ./wechat-backup-win.tar.gz # 要上传文件
+        asset_name: wechat-backup_win_${{ steps.get_version.outputs.VERSION }}.tar.gz # 上传后的文件名
+        asset_content_type: application/gzip
