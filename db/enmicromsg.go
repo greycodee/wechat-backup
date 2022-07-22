@@ -38,7 +38,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool, name string
 	result.Rows = make([]ChatListRow, 0)
 	var queryRowsSqlTmp string
 	var queryRowsSql string
-	queryRowsSqlTmp = "select count(*) as msgCount,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username "
+	queryRowsSqlTmp = "select count(*) as msgCount,ifnull(rc.alias,'') as alias,msg.talker,ifnull(rc.nickname,'') as nickname,ifnull(rc.conRemark,'') as conRemark,ifnull(imf.reserved1,'') as reserved1,ifnull(imf.reserved2,'') as reserved2,msg.createtime from message msg left join rcontact rc on msg.talker=rc.username  left join img_flag imf on msg.talker=imf.username "
 	if name != "" {
 		queryRowsSqlTmp = queryRowsSqlTmp + "where nickname like '%" + name + "%'  or conRemark like '%" + name + "%'"
 	}
@@ -54,7 +54,7 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool, name string
 	defer rows.Close()
 	for rows.Next() {
 		var r ChatListRow
-		err = rows.Scan(&r.MsgCount, &r.Talker, &r.NickName, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
+		err = rows.Scan(&r.MsgCount, &r.Alias, &r.Talker, &r.NickName, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
 		// 判断是否是群聊
 		if len(strings.Split(r.Talker, "@")) == 2 && strings.Split(r.Talker, "@")[1] == "chatroom" {
 			if r.NickName == "" {

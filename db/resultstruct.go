@@ -7,6 +7,7 @@ type ChatList struct {
 
 type ChatListRow struct {
 	Talker      string `json:"talker"`
+	Alias       string `json:"alias"`
 	NickName    string `json:"nickname"`
 	ConRemark   string `json:"conRemark"`
 	Reserved1   string `json:"reserved1"`
