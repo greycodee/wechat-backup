@@ -16,6 +16,7 @@ type ChatListRow struct {
 	MsgCount    int    `json:"msgCount"`
 	CreateTime  int64  `json:"createTime"`
 	ChatType    int    `json:"chatType"`
+	UserType    int    `json:"userType"`
 }
 
 type ChatDetailList struct {

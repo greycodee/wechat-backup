@@ -54,9 +54,11 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool, name string
 	defer rows.Close()
 	for rows.Next() {
 		var r ChatListRow
+		r.UserType = 0
 		err = rows.Scan(&r.MsgCount, &r.Alias, &r.Talker, &r.NickName, &r.ConRemark, &r.Reserved1, &r.Reserved2, &r.CreateTime)
 		// 判断是否是群聊
 		if len(strings.Split(r.Talker, "@")) == 2 && strings.Split(r.Talker, "@")[1] == "chatroom" {
+			r.UserType = 1
 			if r.NickName == "" {
 				queryRoomSql := fmt.Sprintf("select displayname as nickname from chatroom where chatroomname='%s'", r.Talker)
 				room, _ := em.db.Query(queryRoomSql)
@@ -65,7 +67,10 @@ func (em EnMicroMsg) ChatList(pageIndex int, pageSize int, all bool, name string
 					room.Scan(&r.NickName)
 				}
 			}
+		} else if r.Talker[:3] == "gh_" {
+			r.UserType = 2
 		}
+
 		if err != nil {
 			log.Printf("未查询到聊天列表,%s", err)
 		}
