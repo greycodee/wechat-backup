@@ -16,7 +16,7 @@ type WxFileIndex struct {
 func OpenWxFileIndex(dbPath string) *WxFileIndex {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("未查询到 WxFileIndex.db 文件,%s", err)
 	}
 	// 查询表名
 	var tableName string
@@ -24,10 +24,10 @@ func OpenWxFileIndex(dbPath string) *WxFileIndex {
 	err = db.QueryRow(querySql).Scan(&tableName)
 	if err != nil {
 		log.Printf("未查询到图片索引表名,%s", err)
-		log.Fatal(err)
+		// log.Fatal(err)
+	} else {
+		log.Printf("文件索引表名: %s", tableName)
 	}
-	log.Printf("文件索引表名: %s", tableName)
-	log.Printf("请打开 WxFileIndex.db 确认 %s 表里是否有数据，如果没有数据，请删除该表", tableName)
 	return &WxFileIndex{dbPath, db, tableName}
 }
 

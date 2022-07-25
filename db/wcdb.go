@@ -81,15 +81,12 @@ func (wcdb WCDB) getMediaPath(chat ChatDetailListRow) ChatDetailListRow {
 		chat.MediaPath = wcdb.enmicromsg.formatImagePath(chat.ImgPath)
 		chat.MediaBCKPath = wcdb.enmicromsg.formatImageBCKPath(chat)
 		chat.MediaSourcePath = wcdb.wxfileindex.GetImgPath(chat.MsgId)
-		break
 	case 34:
 		// 语音
 		chat.MediaPath = wcdb.enmicromsg.formatVoicePath(chat.ImgPath)
-		break
 	case 43:
 		// 视频
 		chat.MediaPath = wcdb.enmicromsg.formatVideoPath(chat.ImgPath)
-		break
 	case 1090519089:
 		fileInfo := FileInfo{}
 		filepath, fileSize := wcdb.wxfileindex.GetFilePath(chat.MsgId)
