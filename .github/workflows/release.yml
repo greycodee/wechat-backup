@@ -21,8 +21,8 @@ jobs:
         go-version: 1.16
     - name: Build
       run: |
-        apt install gcc-aarch64-linux-gnu
-        apt install gcc-mingw-w64-x86-64
+        sudo apt-get install gcc-aarch64-linux-gnu
+        sudo apt-get install gcc-mingw-w64-x86-64
         make
     - name: Create Release
       id: create_release
