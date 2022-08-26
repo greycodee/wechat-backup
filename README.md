@@ -83,7 +83,3 @@ $ docker run --rm -v /Users/zheng/Documents/voice2:/media  greycodee/silkv3-deco
 
 [![Star History Chart](https://api.star-history.com/svg?repos=greycodee/wechat-backup&type=Date)](https://star-history.com/?utm_source=bestxtools.com#greycodee/wechat-backup&Date)
 
-## 请作者喝个咖啡
-    
-<img src="./alipay.jpg" width = "300"  alt="支付宝" align=left />
- <img src="./wxpay.png" width = "300" alt="微信" align=right />
