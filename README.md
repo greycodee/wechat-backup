@@ -2,7 +2,7 @@
 ![](./web.png)
 
 ## 使用流程
-> 详细说明在: https://greycode.top/posts/android-wechat-bak/
+> 详细说明在: https://blog.greycode.top/posts/android-wechat-bak/
 
 1. 手机聊天记录备份到电脑，在有 ROOT 权限的手机上登陆微信，电脑点击备份恢复，把聊天记录恢复到有 ROOT 的手机上。
 2. 收集下面这些数据，然后放在**同一个文件夹下**:
@@ -70,7 +70,7 @@ $ docker run --rm -v /Users/zheng/Documents/voice2:/media  greycodee/silkv3-deco
 7. 解压解包后生产的 tar 压缩包，然后从里面可以获取到 DB 等文件（相当于本来要ROOT后才能获取到的这些数据，现在可以直接获取了）
 
 > 我这边通过系统备份然后 bak 文件解包-解压后，文件路径在：apps/com.tencent.mm/r/MicroMsg/ 下，大家可以参考一下
-> 如果通过手机系统自带的备份来获取数据时，解密 DB 的密码可以通过这篇文章的方法一来获取： [获取 DB 解密密码](https://greycode.top/posts/android-wechat-bak/#%E8%8E%B7%E5%8F%96-db-%E8%AE%BF%E9%97%AE%E5%AF%86%E7%A0%81)
+> 如果通过手机系统自带的备份来获取数据时，解密 DB 的密码可以通过这篇文章的方法一来获取： [获取 DB 解密密码](https://blog.greycode.top/posts/android-wechat-bak/#%E8%8E%B7%E5%8F%96-db-%E8%AE%BF%E9%97%AE%E5%AF%86%E7%A0%81)
 
 ## Q&A
 ### 语音和视频所在文件夹
