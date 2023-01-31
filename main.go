@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/greycodee/wechat-backup/api"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -33,21 +34,21 @@ func htmlRouter() http.Handler {
 	return e
 }
 
-func apiRouter() http.Handler {
-	e := gin.New()
-	e.Use(gin.Recovery())
-	e.GET("/", func(c *gin.Context) {
-		c.JSON(
-			http.StatusOK,
-			gin.H{
-				"code":    http.StatusOK,
-				"message": "Welcome server 02",
-			},
-		)
-	})
+// func apiRouter() http.Handler {
+// 	e := gin.New()
+// 	e.Use(gin.Recovery())
+// 	e.GET("/", func(c *gin.Context) {
+// 		c.JSON(
+// 			http.StatusOK,
+// 			gin.H{
+// 				"code":    http.StatusOK,
+// 				"message": "Welcome server 02",
+// 			},
+// 		)
+// 	})
 
-	return e
-}
+// 	return e
+// }
 
 func main() {
 	htmlRouter := &http.Server{
@@ -59,7 +60,7 @@ func main() {
 
 	apiRouter := &http.Server{
 		Addr:         fmt.Sprintf(":%s", *apiPort),
-		Handler:      apiRouter(),
+		Handler:      api.ApiRouter(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
