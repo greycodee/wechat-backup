@@ -8,8 +8,6 @@ import (
 	"github.com/greycodee/wechat-backup/db"
 )
 
-var wcdb *db.WCDB
-
 const (
 	ListApi     = "/api/chat/list"
 	DetailApi   = "/api/chat/detail"
@@ -20,19 +18,40 @@ const (
 	VoiceApi    = "/api/media/voice"
 )
 
-func ListHandler(c *gin.Context) {
+type Api struct {
+	wcdb *db.WCDB
+}
+
+func New(dbPath string) *Api {
+	a := &Api{}
+	a.wcdb = db.InitWCDB(dbPath)
+	return a
+}
+
+func (a Api) listHandler(c *gin.Context) {
 	pageIndex, _ := strconv.Atoi(c.DefaultQuery("pageIndex", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 	name := c.Query("name")
-	all, _ := strconv.ParseBool(c.Query("all"))
+	all, _ := strconv.ParseBool(c.DefaultQuery("all", "false"))
 
+	result := a.wcdb.ChatList(pageIndex-1, pageSize, all, name)
 	// 聊天列表
-	c.JSON(200, wcdb.ChatList(pageIndex-1, pageSize, all, name))
+	c.JSON(200, result)
 }
 
-func ApiRouter() http.Handler {
+func (a Api) detailHandler(c *gin.Context) {
+	pageIndex, _ := strconv.Atoi(c.DefaultQuery("pageIndex", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
+	talker := c.Query("talker")
+	c.JSON(200, a.wcdb.ChatDetailList(talker, pageIndex-1, pageSize))
+}
+
+func (a Api) Router() http.Handler {
 	g := gin.New()
 	g.Use(gin.Recovery())
-	g.GET(ListApi, ListHandler)
+
+	g.GET(ListApi, a.listHandler)
+	g.GET(DetailApi, a.detailHandler)
+
 	return g
 }

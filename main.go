@@ -34,22 +34,6 @@ func htmlRouter() http.Handler {
 	return e
 }
 
-// func apiRouter() http.Handler {
-// 	e := gin.New()
-// 	e.Use(gin.Recovery())
-// 	e.GET("/", func(c *gin.Context) {
-// 		c.JSON(
-// 			http.StatusOK,
-// 			gin.H{
-// 				"code":    http.StatusOK,
-// 				"message": "Welcome server 02",
-// 			},
-// 		)
-// 	})
-
-// 	return e
-// }
-
 func main() {
 	htmlRouter := &http.Server{
 		Addr:         fmt.Sprintf(":%s", *htmlPort),
@@ -60,7 +44,7 @@ func main() {
 
 	apiRouter := &http.Server{
 		Addr:         fmt.Sprintf(":%s", *apiPort),
-		Handler:      api.ApiRouter(),
+		Handler:      api.New(*basePath).Router(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
