@@ -13,7 +13,7 @@ import (
 )
 
 var apiPort = flag.String("ap", "9999", "api port")
-var basePath = flag.String("f", "/home/zheng/coding/wechatbak/dest/1058116fa5360697125915314cf3c3a0", "wechat bak folder")
+var basePath = flag.String("f", "", "wechat bak folder")
 
 //go:embed static
 var staticFile embed.FS
