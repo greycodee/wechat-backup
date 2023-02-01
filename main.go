@@ -12,7 +12,7 @@ import (
 	"github.com/greycodee/wechat-backup/api"
 )
 
-var apiPort = flag.String("ap", "9999", "api port")
+var apiPort = flag.String("p", "9999", "api port")
 var basePath = flag.String("f", "", "wechat bak folder")
 
 //go:embed static
