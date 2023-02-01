@@ -2,24 +2,24 @@ package main
 
 import (
 	"embed"
-	"encoding/json"
 	"flag"
+	"fmt"
 	"io/fs"
-	"log"
-	"net"
 	"net/http"
-	"strconv"
+	"time"
 
-	"github.com/greycodee/wechat-backup/db"
+	"github.com/gin-gonic/gin"
+	"github.com/greycodee/wechat-backup/api"
 )
 
-var wcdb *db.WCDB
+var apiPort = flag.String("p", "9999", "api port")
+var basePath = flag.String("f", "", "wechat bak folder")
 
 //go:embed static
-var htmlFile embed.FS
+var staticFile embed.FS
 
-var serverPort = flag.String("p", "9999", "server port")
-var basePath = flag.String("f", "", "wechat bak folder")
+//go:embed index.html
+var indexHtml []byte
 
 func init() {
 	flag.Parse()
@@ -30,110 +30,28 @@ func init() {
 
 func main() {
 
-	wcdb = db.InitWCDB(*basePath)
+	fsys, _ := fs.Sub(staticFile, "static")
 
-	fsys, _ := fs.Sub(htmlFile, "static")
-	staticHandle := http.FileServer(http.FS(fsys))
+	apiRouter := api.New(*basePath)
 
-	// 文件路由
-	fs := http.FileServer(http.Dir(*basePath))
-	http.Handle(db.MediaPathPrefix, http.StripPrefix(db.MediaPathPrefix, fs))
+	apiRouter.Engine.StaticFS("/static", http.FS(fsys))
+	apiRouter.Engine.GET("/", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "text/html")
+		ctx.String(http.StatusOK, string(indexHtml))
+	})
 
-	http.Handle("/", staticHandle)
-	http.Handle("/api/", route())
+	apiRouter.Engine.Static("/media/", *basePath)
 
-	log.Println("server start")
-	interfaceAddr, _ := net.InterfaceAddrs()
-	for _, address := range interfaceAddr {
-		ipNet, _ := address.(*net.IPNet)
-		if ipNet.IP.To4() != nil {
-			log.Printf("server addr http://%s:%s", ipNet.IP.String(), *serverPort)
-		}
+	apiRouter.Engine.NoRoute(func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusFound, "/")
+	})
+
+	httpServer := &http.Server{
+		Addr:         fmt.Sprintf(":%s", *apiPort),
+		Handler:      apiRouter.Router(),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
-	err := http.ListenAndServe(":"+*serverPort, nil)
-	if err != nil {
-		log.Fatalf("ListenAndServe: %v", err)
-	}
-}
-
-func route() http.Handler {
-	return &API{}
-}
-
-type API struct {
-}
-
-func (api *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	apiMap[path](w, r)
-}
-
-var apiMap = map[string]func(w http.ResponseWriter, r *http.Request){
-	"/api/chat/list": func(w http.ResponseWriter, r *http.Request) {
-		// 聊天列表
-		params := r.URL.Query()
-		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
-		pageSize, _ := strconv.Atoi(params["pageSize"][0])
-		names, _ := params["name"]
-		name := ""
-		if len(names) > 0 {
-			name = names[0]
-		}
-		all, _ := strconv.ParseBool(params["all"][0])
-		result, err := json.Marshal(wcdb.ChatList(pageIndex-1, pageSize, all, name))
-		if err != nil {
-			log.Fatalf("json marshal error: %v", err)
-		}
-		w.Write(result)
-	},
-	"/api/chat/detail": func(w http.ResponseWriter, r *http.Request) {
-		//聊天记录
-		params := r.URL.Query()
-		talker := params["talker"][0]
-		pageIndex, _ := strconv.Atoi(params["pageIndex"][0])
-		pageSize, _ := strconv.Atoi(params["pageSize"][0])
-
-		result, err := json.Marshal(wcdb.ChatDetailList(talker, pageIndex-1, pageSize))
-		if err != nil {
-			log.Fatalf("json marshal error: %v", err)
-		}
-		w.Write(result)
-	},
-	"/api/user/info": func(w http.ResponseWriter, r *http.Request) {
-		// 用户信息
-		params := r.URL.Query()
-		username := params["username"][0]
-		result, err := json.Marshal(wcdb.GetUserInfo(username))
-		if err != nil {
-			log.Fatalf("json marshal error: %v", err)
-		}
-		w.Write(result)
-	},
-	"/api/user/myinfo": func(w http.ResponseWriter, r *http.Request) {
-		// 自己的信息
-		result, err := json.Marshal(wcdb.GetMyInfo())
-		if err != nil {
-			log.Fatalf("json marshal error: %v", err)
-		}
-		w.Write(result)
-	},
-	"/api/media/img": func(w http.ResponseWriter, r *http.Request) {
-		// 图片
-		params := r.URL.Query()
-		msgId := params["msgId"][0]
-		w.Write([]byte(wcdb.GetImgPath(msgId)))
-	},
-	"/api/media/video": func(w http.ResponseWriter, r *http.Request) {
-		// 视频
-		params := r.URL.Query()
-		msgId := params["msgId"][0]
-		w.Write([]byte(wcdb.GetVideoPath(msgId)))
-	},
-	"/api/media/voice": func(w http.ResponseWriter, r *http.Request) {
-		// 语音
-		params := r.URL.Query()
-		msgId := params["msgId"][0]
-		w.Write([]byte(wcdb.GetVoicePath(msgId)))
-	},
+	httpServer.ListenAndServe()
 }
