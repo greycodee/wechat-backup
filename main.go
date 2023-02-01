@@ -1,20 +1,25 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
-	"log"
+	"io/fs"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/greycodee/wechat-backup/api"
-	"golang.org/x/sync/errgroup"
 )
 
 var apiPort = flag.String("ap", "9999", "api port")
-var htmlPort = flag.String("hp", "9991", "html port")
-var basePath = flag.String("f", "", "wechat bak folder")
+var basePath = flag.String("f", "/home/zheng/coding/wechatbak/dest/1058116fa5360697125915314cf3c3a0", "wechat bak folder")
+
+//go:embed static
+var staticFile embed.FS
+
+//go:embed index.html
+var indexHtml []byte
 
 func init() {
 	flag.Parse()
@@ -23,41 +28,30 @@ func init() {
 	}
 }
 
-var (
-	g errgroup.Group
-)
-
-func htmlRouter() http.Handler {
-	e := gin.New()
-	e.Use(gin.Recovery())
-	e.StaticFS("/", http.Dir("./static"))
-	return e
-}
-
 func main() {
-	htmlRouter := &http.Server{
-		Addr:         fmt.Sprintf(":%s", *htmlPort),
-		Handler:      htmlRouter(),
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
 
-	apiRouter := &http.Server{
+	fsys, _ := fs.Sub(staticFile, "static")
+
+	apiRouter := api.New(*basePath)
+
+	apiRouter.Engine.StaticFS("/static", http.FS(fsys))
+	apiRouter.Engine.GET("/", func(ctx *gin.Context) {
+		ctx.Header("Content-Type", "text/html")
+		ctx.String(http.StatusOK, string(indexHtml))
+	})
+
+	apiRouter.Engine.Static("/media/", *basePath)
+
+	apiRouter.Engine.NoRoute(func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusFound, "/")
+	})
+
+	httpServer := &http.Server{
 		Addr:         fmt.Sprintf(":%s", *apiPort),
-		Handler:      api.New(*basePath).Router(),
+		Handler:      apiRouter.Router(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
 
-	g.Go(func() error {
-		return htmlRouter.ListenAndServe()
-	})
-
-	g.Go(func() error {
-		return apiRouter.ListenAndServe()
-	})
-
-	if err := g.Wait(); err != nil {
-		log.Fatal(err)
-	}
+	httpServer.ListenAndServe()
 }

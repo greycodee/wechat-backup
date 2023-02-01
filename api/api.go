@@ -19,12 +19,16 @@ const (
 )
 
 type Api struct {
-	wcdb *db.WCDB
+	wcdb   *db.WCDB
+	Engine *gin.Engine
 }
 
 func New(dbPath string) *Api {
 	a := &Api{}
 	a.wcdb = db.InitWCDB(dbPath)
+	a.Engine = gin.New()
+	a.Engine.Use(gin.Recovery())
+
 	return a
 }
 
@@ -46,12 +50,38 @@ func (a Api) detailHandler(c *gin.Context) {
 	c.JSON(200, a.wcdb.ChatDetailList(talker, pageIndex-1, pageSize))
 }
 
+func (a Api) userInfoHandler(c *gin.Context) {
+	userName := c.Query("username")
+	c.JSON(200, a.wcdb.GetUserInfo(userName))
+}
+
+func (a Api) myInfoHandler(c *gin.Context) {
+	c.JSON(200, a.wcdb.GetMyInfo())
+}
+
+func (a Api) imgHandler(c *gin.Context) {
+	msgId := c.Query("msgId")
+	c.JSON(200, a.wcdb.GetImgPath(msgId))
+}
+
+func (a Api) videoHandler(c *gin.Context) {
+	msgId := c.Query("msgId")
+	c.JSON(200, a.wcdb.GetVideoPath(msgId))
+}
+
+func (a Api) voiceHandler(c *gin.Context) {
+	msgId := c.Query("msgId")
+	c.JSON(200, a.wcdb.GetVoicePath(msgId))
+}
+
 func (a Api) Router() http.Handler {
-	g := gin.New()
-	g.Use(gin.Recovery())
+	a.Engine.GET(ListApi, a.listHandler)
+	a.Engine.GET(DetailApi, a.detailHandler)
+	a.Engine.GET(UserInfoApi, a.userInfoHandler)
+	a.Engine.GET(MyInfoApi, a.myInfoHandler)
+	a.Engine.GET(ImgApi, a.imgHandler)
+	a.Engine.GET(VideoApi, a.videoHandler)
+	a.Engine.GET(VoiceApi, a.voiceHandler)
 
-	g.GET(ListApi, a.listHandler)
-	g.GET(DetailApi, a.detailHandler)
-
-	return g
+	return a.Engine
 }
