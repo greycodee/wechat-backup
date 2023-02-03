@@ -12,5 +12,6 @@
             "program": "${fileDirname}"
             
         }
-    ]
+    ],
+    "go.testFlags":["-v"]
 }
