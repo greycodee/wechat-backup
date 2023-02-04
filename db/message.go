@@ -1,5 +1,10 @@
 package db
 
+import (
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
 type Message struct {
 	MsgId             int    `gorm:"column:msgId;primary_key" json:"msgId"`
 	MsgSvrId          int    `gorm:"column:msgSvrId" json:"msgSvrId"`
@@ -59,4 +64,32 @@ type Rcontact struct {
 
 func (Rcontact) TableName() string {
 	return "rcontact"
+}
+
+type ChatListResult struct {
+	MsgCount   int64  `gorm:"column:msgCount"`
+	Alias      string `gorm:"column:alias"`
+	Talker     string `gorm:"column:talker"`
+	NickName   string `gorm:"column:nickname"`
+	ConRemark  string `gorm:"column:conRemark"`
+	Reserved1  string `gorm:"column:reserved1"`
+	Reserved2  string `gorm:"column:reserved2"`
+	CreateTime int64  `gorm:"column:createTime"`
+}
+
+func GetChatList() (list []ChatListResult, err error) {
+	db, err := gorm.Open(sqlite.Open("/home/zheng/coding/wechatbak/dest/79b23ef49a3016d8c52a787fc4ab59e4/EnMicroMsg_plain.db"), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	db.Table("message msg").
+		Select("count(*) as msgCount,rc.alias,msg.talker,rc.nickname,rc.conRemark,imf.reserved1,imf.reserved2,msg.createTime").
+		Joins("left join rcontact rc on msg.talker=rc.username").
+		Joins("left join img_flag imf on msg.talker=imf.username").
+		Group("msg.talker").
+		Order("msg.createTime desc").
+		Limit(5).Scan(&list)
+
+	return
 }
