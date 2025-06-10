@@ -1,0 +1,23 @@
+GET http://localhost:9090/
+
+111111
+###
+
+POST http://localhost:9090/run_process
+Content-Type: application/json
+
+{
+  "work_space": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/workspace3",
+  "android_backup_file": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/wechat.bak",
+  "android_sdcard_file": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/backup_wechat.zip"
+}
+
+###
+POST http://localhost:9090/process_backup_file_test
+Content-Type: application/json
+
+{
+  "work_space": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/workspace2",
+  "android_backup_file": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/wechat.bak",
+  "android_sdcard_file": "/Volumes/hkdisk/wechat-backup/20241218z-111111-h/2024121801/backup_wechat.zip"
+}

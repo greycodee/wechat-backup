@@ -1,0 +1,14 @@
+/Users/zheng/coding/opensource/wechat-backup/target/debug/deps/libclang_sys-fd446526003f75cb.rmeta: /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/lib.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/support.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/link.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/macros.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/common.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/dynamic.rs
+
+/Users/zheng/coding/opensource/wechat-backup/target/debug/deps/libclang_sys-fd446526003f75cb.rlib: /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/lib.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/support.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/link.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/macros.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/common.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/dynamic.rs
+
+/Users/zheng/coding/opensource/wechat-backup/target/debug/deps/clang_sys-fd446526003f75cb.d: /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/lib.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/support.rs /Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/link.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/macros.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/common.rs /Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/dynamic.rs
+
+/Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/lib.rs:
+/Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/support.rs:
+/Users/zheng/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/clang-sys-1.8.1/src/link.rs:
+/Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/macros.rs:
+/Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/common.rs:
+/Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out/dynamic.rs:
+
+# env-dep:OUT_DIR=/Users/zheng/coding/opensource/wechat-backup/target/debug/build/clang-sys-8f937d703bc12797/out

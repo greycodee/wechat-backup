@@ -1,0 +1,3 @@
+[workspace]
+resolver = "2"
+members = ["silkv3-rs", "wechat-cli", "wechat-saver"]

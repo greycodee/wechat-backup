@@ -1,0 +1,9 @@
+[package]
+name = "wechat-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wechat-saver = { path = "../wechat-saver" }
+tokio = {version = "1.42.0",features = ["full"]}
+clap = "4.5.28"

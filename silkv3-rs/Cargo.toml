@@ -1,0 +1,12 @@
+[package]
+name = "silkv3-rs"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "A short description of my package"
+documentation = "https://docs.rs/bitflags"
+build = "build.rs"
+
+[build-dependencies]
+cc = "1.1.31"
+bindgen = "0.70.1"

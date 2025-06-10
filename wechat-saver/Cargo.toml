@@ -1,0 +1,29 @@
+[package]
+name = "wechat-saver"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "wechat_saver_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+silkv3-rs = { path = "../silkv3-rs" }
+tar = "0.4.42"
+md-5 = "0.10.6"
+rusqlite = {version = "0.32.1",features = ["sqlcipher"]}
+hex = "0.4.3"
+libc = "0.2.161"
+quick-xml = {version = "0.37.2", features = ["serialize"]}
+serde_json = "1.0.132"
+serde = { version = "1.0.214", features = ["derive"] }
+uuid = { version = "1.11.0", features = ["v4"] }
+zip = "2.2.0"
+tokio = {version = "1.42.0",features = ["full"]}
+reqwest = { version = "0.12.12", features = ["json", "multipart", "stream"] }
+flate2 = "1.0.35"
+anyhow = "1.0.95"
+
+
+[dev-dependencies]
+dotenv = "0.15.0"
