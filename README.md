@@ -1,4 +1,5 @@
 > ### *此项目停止维护，如需二次开发，请自行 fork*
+> ### [Rust分支](https://github.com/greycodee/wechat-backup/tree/rust) 实现了一键备份和解密，请自行阅读代码
 
 ## 效果图
 ![](./web.png)
